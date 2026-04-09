@@ -42,8 +42,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# eval results
+# eval results (keep latest.html as a sample)
 eval/results/
+!eval/results/latest.html
 
 # test artifacts
 test-chart.png
