@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Report — Marketing Analytics Agent</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f3f4f6; color: #111827; line-height: 1.6; }
+    code { font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <div style="max-width:960px;margin:0 auto;padding:40px 24px;">
+    <div style="margin-bottom:32px;">
+      <h1 style="font-size:28px;font-weight:700;margin-bottom:4px;">Eval Report</h1>
+      <p style="color:#6b7280;font-size:14px;">Marketing Analytics Agent — 4/8/2026, 8:29:07 PM</p>
+      <p style="color:#6b7280;font-size:13px;">Model: <code>anthropic/claude-sonnet-4.6</code> · Judge: <code>anthropic/claude-sonnet-4.6</code> · Runtime: 629.6s</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;">
+      <div style="background:white;border-radius:12px;padding:20px;border:1px solid #e5e7eb;">
+        <div style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Pass Rate</div>
+        <div style="font-size:28px;font-weight:700;color:#059669;">7/7</div>
+      </div>
+      <div style="background:white;border-radius:12px;padding:20px;border:1px solid #e5e7eb;">
+        <div style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Failed</div>
+        <div style="font-size:28px;font-weight:700;color:#059669;">0</div>
+      </div>
+      <div style="background:white;border-radius:12px;padding:20px;border:1px solid #e5e7eb;">
+        <div style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Avg Score</div>
+        <div style="font-size:28px;font-weight:700;color:#059669;">5.0<span style="font-size:14px;color:#9ca3af;">/5</span></div>
+      </div>
+      <div style="background:white;border-radius:12px;padding:20px;border:1px solid #e5e7eb;">
+        <div style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Avg Duration</div>
+        <div style="font-size:28px;font-weight:700;color:#111827;">89.9<span style="font-size:14px;color:#9ca3af;">s</span></div>
+      </div>
+    </div>
+
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;">Test Cases</h2>
+    
+      <div style="border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:16px;background:white;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+              <span style="background:#ecfdf5;color:#059669;font-weight:700;font-size:12px;padding:2px 10px;border-radius:999px;letter-spacing:0.05em;">PASS</span>
+              <h3 style="margin:0;font-size:16px;font-weight:600;color:#111827;">roas-by-channel</h3>
+            </div>
+            <p style="margin:4px 0 0;color:#6b7280;font-size:14px;">"Show ROAS by channel as a bar chart, sorted descending"</p>
+          </div>
+          <span style="color:#9ca3af;font-size:13px;white-space:nowrap;">66.0s</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;">
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Quality Score</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:80px;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
+          <div style="width:100%;height:100%;background:#059669;border-radius:4px;"></div>
+        </div>
+        <span style="font-weight:600;">5/5</span>
+      </div>
+          </div>
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Charts</div>
+            <div style="font-weight:600;color:#111827;">1 generated</div>
+          </div>
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Report</div>
+            <div style="font-weight:600;color:#059669;">Yes</div>
+          </div>
+        </div>
+
+        <div style="background:#fffbeb;border-left:3px solid #d97706;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#92400e;">
+          <strong>Judge:</strong> The agent produces an excellent, comprehensive analysis that fully meets and exceeds all rubric criteria. The tool sequence is logical (plan → execute → report). The Python code is correct, uses real columns ('channel', 'spend', 'revenue'), properly computes ROAS as revenue/spend, sorts descending, and generates a well-styled bar chart with a benchmark reference line and color coding. The report includes a clear data table, meaningful insights (not just restating numbers — e.g., comparing Email spend vs. Google Ads for the same revenue), and three specific, actionable recommendations with concrete budget figures and thresholds. The blended ROAS benchmark adds analytical depth. The agent text response provides a concise summary that highlights the key finding. Minor note: the benchmark indicator in the table (✅/❌) has a slight inconsistency since Meta at 4.40x is below the 4.91x benchmark but is marked ✅, though this is a small labeling issue that doesn't materially affect the quality of the analysis.
+        </div>
+
+        <div style="font-size:13px;color:#6b7280;margin-bottom:8px;">
+          <strong>Rubric:</strong> The agent should produce a bar chart showing ROAS (revenue/spend) by channel, sorted descending. The report should explain which channels are most/least efficient and include actionable recommendations.
+        </div>
+        <div style="font-size:13px;color:#6b7280;margin-bottom:12px;">
+          <strong>Tools:</strong> <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">planAnalysis</code> → <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">executeAnalysis</code> → <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">composeReport</code>
+        </div>
+
+        <details><summary style="cursor:pointer;color:#6366f1;font-size:13px;">Generated Python (52 lines)</summary>
+           <pre style="background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;margin-top:8px;">
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+import json
+
+# Aggregate by channel
+channel_df = df.groupby('channel').agg(total_spend=('spend', 'sum'), total_revenue=('revenue', 'sum')).reset_index()
+channel_df['roas'] = channel_df['total_revenue'] / channel_df['total_spend']
+channel_df = channel_df.sort_values('roas', ascending=False)
+
+# Blended ROAS
+blended_roas = df['revenue'].sum() / df['spend'].sum()
+
+# ── Chart ──────────────────────────────────────────────────────────────────
+fig, ax = plt.subplots(figsize=(9, 5))
+
+colors = ['#2563EB' if r &gt;= blended_roas else '#93C5FD' for r in channel_df['roas']]
+bars = ax.bar(channel_df['channel'], channel_df['roas'], color=colors, width=0.55, zorder=3)
+
+# Value labels on bars
+for bar, val in zip(bars, channel_df['roas']):
+    ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.05,
+            f'{val:.2f}x', ha='center', va='bottom', fontsize=11, fontweight='bold', color='#1e3a5f')
+
+# Blended ROAS reference line
+ax.axhline(blended_roas, color='#DC2626', linestyle='--', linewidth=1.6, zorder=4, label=f'Blended ROAS: {blended_roas:.2f}x')
+
+ax.set_title('ROAS by Channel (Descending)', fontsize=15, fontweight='bold', pad=14)
+ax.set_xlabel('Channel', fontsize=12)
+ax.set_ylabel('ROAS (Revenue / Spend)', fontsize=12)
+ax.yaxis.set_major_formatter(mticker.FormatStrFormatter('%.1fx'))
+ax.set_ylim(0, channel_df['roas'].max() * 1.20)
+ax.legend(fontsize=10)
+ax.grid(axis='y', linestyle='--', alpha=0.4, zorder=0)
+ax.spines[['top', 'right']].set_visible(False)
+
+plt.tight_layout()
+plt.savefig('chart_1.png', dpi=150)
+plt.close()
+
+# ── Findings ───────────────────────────────────────────────────────────────
+findings = {
+    &quot;blended_roas&quot;: round(blended_roas, 2),
+    &quot;channels&quot;: channel_df[['channel', 'roas', 'total_spend', 'total_revenue']].round(2).to_dict(orient='records'),
+    &quot;top_channel&quot;: channel_df.iloc[0]['channel'],
+    &quot;top_roas&quot;: round(channel_df.iloc[0]['roas'], 2),
+    &quot;bottom_channel&quot;: channel_df.iloc[-1]['channel'],
+    &quot;bottom_roas&quot;: round(channel_df.iloc[-1]['roas'], 2),
+}
+print(json.dumps(findings))
+</pre></details>
+        <details><summary style="cursor:pointer;color:#6366f1;font-size:13px;">Report (2518 chars)</summary>
+           <pre style="background:#f8fafc;color:#334155;padding:12px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;margin-top:8px;white-space:pre-wrap;">
+## ROAS by Channel Analysis
+
+### Executive Summary
+Across all channels, the blended ROAS stands at **4.91x** — meaning every dollar spent returns $4.91 in revenue. However, performance varies dramatically by channel, with **Email far outperforming** all others and **LinkedIn falling well below** the blended benchmark.
+
+---
+
+### ROAS by Channel
+
+| Channel | Total Spend | Total Revenue | ROAS |
+|---|---|---|---|
+| **Email** | $10,700 | $247,200 | **23.10x** ✅ |
+| **Meta** | $53,000 | $233,000 | **4.40x** ✅ |
+| **Google Ads** | $72,000 | $246,700 | **3.43x** ❌ |
+| **LinkedIn** | $18,500 | $30,000 | **1.62x** ❌ |
+
+&gt; ✅ = Above blended ROAS benchmark (4.91x) &amp;nbsp;&amp;nbsp; ❌ = Below benchmark
+
+---
+
+### Chart
+
+**chart_1** — Bar chart of ROAS by channel, sorted descending, with a dashed red line showing the blended ROAS of 4.91x. Bars in dark blue exceed the benchmark; light blue bars fall below it.
+
+---
+
+### Top &amp; Bottom Performers
+
+- 🏆 **Email** is the clear standout at **23.10x ROAS** — nearly 5× the blended average. It also generates as much revenue as Google Ads ($247K vs. $247K) while spending only **$10,700** compared to Google Ads' **$72,000**.
+- 🥈 **Meta** delivers a solid **4.40x ROAS**, nearly matching the blended benchmark with strong absolute revenue ($233K).
+- ⚠️ **Google Ads** comes in at **3.43x** — below the blended average despite being the **highest-spend channel** at $72K. This is a budget efficiency concern.
+- 🔴 **LinkedIn** has the worst ROAS at just **1.62x**, meaning only $1.62 is returned per dollar spent — a significant drag on overall performance.
+
+---
+
+### Recommended Actions
+
+1. **Scale Email investment** — Email is generating extraordinary returns (23.1x). Even a modest increase in budget (e.g., doubling to $21K) could unlock significant incremental revenue with minimal risk. Investigate whether list size, segmentation, or content quality can be further optimized.
+
+2. **Re-evaluate Google Ads efficiency** — As the largest spend channel at $72K, its 3.43x ROAS is pulling the blended average down. Conduct a keyword-level audit to identify underperforming campaigns and reallocate budget to higher-converting segments or toward Email and Meta.
+
+3. **Set a performance threshold for LinkedIn** — A 1.62x ROAS barely covers costs when factoring in operational overhead. Pause or restructure LinkedIn campaigns immediately, focusing only on high-intent audiences (e.g., retargeting, lookalikes) and set a minimum ROAS threshold of 3.0x before resuming full spend.
+</pre></details>
+      </div>
+
+      <div style="border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:16px;background:white;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+              <span style="background:#ecfdf5;color:#059669;font-weight:700;font-size:12px;padding:2px 10px;border-radius:999px;letter-spacing:0.05em;">PASS</span>
+              <h3 style="margin:0;font-size:16px;font-weight:600;color:#111827;">spend-vs-revenue-scatter</h3>
+            </div>
+            <p style="margin:4px 0 0;color:#6b7280;font-size:14px;">"Create a scatter plot of spend vs revenue by campaign, colored by channel"</p>
+          </div>
+          <span style="color:#9ca3af;font-size:13px;white-space:nowrap;">70.6s</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;">
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Quality Score</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:80px;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
+          <div style="width:100%;height:100%;background:#059669;border-radius:4px;"></div>
+        </div>
+        <span style="font-weight:600;">5/5</span>
+      </div>
+          </div>
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Charts</div>
+            <div style="font-weight:600;color:#111827;">1 generated</div>
+          </div>
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Report</div>
+            <div style="font-weight:600;color:#059669;">Yes</div>
+          </div>
+        </div>
+
+        <div style="background:#fffbeb;border-left:3px solid #d97706;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#92400e;">
+          <strong>Judge:</strong> The agent fully meets and exceeds the rubric criteria. The scatter plot correctly places spend on the x-axis and revenue on the y-axis, with points colored by channel and a clear legend. The code is robust, using flexible column matching rather than hardcoded names, aggregates correctly, and includes proper formatting. The break-even diagonal line is a valuable addition beyond the basic request. The report identifies outlier campaigns (Newsletter at 25.87x ROAS, Sponsored Content at 1.62x), discusses spend efficiency meaningfully, and provides actionable recommendations (scale email, re-evaluate LinkedIn, use ROAS threshold as investment gate). The tool sequence is logical, the ROAS calculations add analytical depth, and the campaign annotations on the chart enhance readability. Overall an excellent, well-structured output.
+        </div>
+
+        <div style="font-size:13px;color:#6b7280;margin-bottom:8px;">
+          <strong>Rubric:</strong> The agent should produce a scatter plot with spend on x-axis and revenue on y-axis, points colored by channel with a legend. The report should identify outlier campaigns and discuss spend efficiency.
+        </div>
+        <div style="font-size:13px;color:#6b7280;margin-bottom:12px;">
+          <strong>Tools:</strong> <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">executeAnalysis</code> → <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">composeReport</code>
+        </div>
+
+        <details><summary style="cursor:pointer;color:#6366f1;font-size:13px;">Generated Python (91 lines)</summary>
+           <pre style="background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;margin-top:8px;">
+import pandas as pd
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import numpy as np
+import json
+
+# Load and inspect data
+print(df.columns.tolist())
+print(df.head(2))
+
+# Identify relevant columns (flexible matching)
+col_lower = {c.lower(): c for c in df.columns}
+
+spend_col   = next((col_lower[k] for k in col_lower if 'spend' in k), None)
+revenue_col = next((col_lower[k] for k in col_lower if 'revenue' in k), None)
+campaign_col= next((col_lower[k] for k in col_lower if 'campaign' in k), None)
+channel_col = next((col_lower[k] for k in col_lower if 'channel' in k), None)
+
+print(f&quot;Using: spend={spend_col}, revenue={revenue_col}, campaign={campaign_col}, channel={channel_col}&quot;)
+
+# Aggregate by campaign &amp; channel if needed
+agg = df.groupby([campaign_col, channel_col])[[spend_col, revenue_col]].sum().reset_index()
+
+# Assign a color to each channel
+channels = agg[channel_col].unique()
+palette   = plt.get_cmap('tab10')
+color_map = {ch: palette(i / max(len(channels)-1, 1)) for i, ch in enumerate(channels)}
+colors    = agg[channel_col].map(color_map)
+
+# ── Chart ──────────────────────────────────────────────────────────────────
+fig, ax = plt.subplots(figsize=(11, 7))
+
+for ch in channels:
+    mask = agg[channel_col] == ch
+    ax.scatter(
+        agg.loc[mask, spend_col],
+        agg.loc[mask, revenue_col],
+        label=ch,
+        color=color_map[ch],
+        s=110,
+        alpha=0.82,
+        edgecolors='white',
+        linewidths=0.6
+    )
+
+# Break-even line (revenue = spend)
+max_val = max(agg[spend_col].max(), agg[revenue_col].max()) * 1.05
+ax.plot([0, max_val], [0, max_val], color='grey', linestyle='--',
+        linewidth=1.2, label='Break-even (1:1)', zorder=0)
+
+# Labels for each point
+for _, row in agg.iterrows():
+    ax.annotate(
+        str(row[campaign_col]),
+        xy=(row[spend_col], row[revenue_col]),
+        xytext=(5, 4),
+        textcoords='offset points',
+        fontsize=7.5,
+        color='#333333'
+    )
+
+ax.set_xlabel('Spend ($)', fontsize=12)
+ax.set_ylabel('Revenue ($)', fontsize=12)
+ax.set_title('Spend vs. Revenue by Campaign\n(colored by channel)', fontsize=14, fontweight='bold')
+ax.legend(title='Channel', bbox_to_anchor=(1.01, 1), loc='upper left', fontsize=9)
+ax.xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, _: f'${x:,.0f}'))
+ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda y, _: f'${y:,.0f}'))
+ax.grid(True, linestyle='--', alpha=0.35)
+plt.tight_layout()
+plt.savefig('chart_1.png', dpi=150)
+plt.close()
+
+# ── Findings ──────────────────────────────────────────────────────────────
+agg['roas'] = (agg[revenue_col] / agg[spend_col]).round(2)
+findings = {
+    &quot;total_campaigns&quot;: int(agg[campaign_col].nunique()),
+    &quot;channels&quot;: list(channels),
+    &quot;top_roas_campaign&quot;: agg.loc[agg['roas'].idxmax(), campaign_col],
+    &quot;top_roas_value&quot;: float(agg['roas'].max()),
+    &quot;lowest_roas_campaign&quot;: agg.loc[agg['roas'].idxmin(), campaign_col],
+    &quot;lowest_roas_value&quot;: float(agg['roas'].min()),
+    &quot;below_breakeven_count&quot;: int((agg[revenue_col] &lt; agg[spend_col]).sum()),
+    &quot;spend_col&quot;: spend_col,
+    &quot;revenue_col&quot;: revenue_col,
+    &quot;campaign_col&quot;: campaign_col,
+    &quot;channel_col&quot;: channel_col
+}
+print(json.dumps(findings))
+</pre></details>
+        <details><summary style="cursor:pointer;color:#6366f1;font-size:13px;">Report (2128 chars)</summary>
+           <pre style="background:#f8fafc;color:#334155;padding:12px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;margin-top:8px;white-space:pre-wrap;">## Spend vs. Revenue by Campaign
+
+### Executive Summary
+The scatter plot maps 7 campaigns across 4 channels (Google Ads, Meta, Email, LinkedIn) against a break-even reference line (Revenue = Spend). All campaigns are operating above break-even, but ROAS varies dramatically — from **25.87x** for the top performer to **1.62x** for the lowest.
+
+---
+
+### Chart
+
+**chart_1** — Scatter plot of Spend vs. Revenue by campaign, color-coded by channel. The dashed diagonal line represents the break-even point (1:1 revenue-to-spend ratio). All campaigns fall above the line, indicating positive returns.
+
+---
+
+### Key Findings
+
+| Metric | Value |
+|---|---|
+| Total Campaigns | 7 |
+| Channels | Google Ads, Meta, Email, LinkedIn |
+| Campaigns Above Break-Even | 7 of 7 (100%) |
+| Highest ROAS | **Newsletter** — 25.87x |
+| Lowest ROAS | **Sponsored Content** — 1.62x |
+
+**Channel Performance Highlights:**
+- **Email** stands out as a high-efficiency channel — the *Newsletter* campaign generates exceptional returns relative to its spend.
+- **LinkedIn** (*Sponsored Content*) has the lowest ROAS at 1.62x, suggesting high cost-per-acquisition relative to revenue generated.
+- **Google Ads** and **Meta** campaigns cluster in the mid-range, operating profitably but with room to optimize.
+
+---
+
+### Recommended Actions
+
+1. **Scale Email campaigns** — With Newsletter achieving a 25.87x ROAS, there is a strong case for increasing investment in email-driven campaigns. Audit what's working (segmentation, offer type, timing) and replicate across other email initiatives.
+
+2. **Re-evaluate LinkedIn spend** — Sponsored Content at 1.62x ROAS is the weakest performer. Consider A/B testing different ad formats, tightening audience targeting, or reallocating a portion of that budget to higher-performing channels until performance improves.
+
+3. **Use break-even distance as a rebalancing guide** — Campaigns well above the diagonal (like Newsletter) warrant spend increases, while those close to the line (Sponsored Content) need optimization before scaling. Establish a minimum ROAS threshold (e.g., 3x) as a gate for continued investment.
+</pre></details>
+      </div>
+
+      <div style="border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:16px;background:white;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+              <span style="background:#ecfdf5;color:#059669;font-weight:700;font-size:12px;padding:2px 10px;border-radius:999px;letter-spacing:0.05em;">PASS</span>
+              <h3 style="margin:0;font-size:16px;font-weight:600;color:#111827;">monthly-trend</h3>
+            </div>
+            <p style="margin:4px 0 0;color:#6b7280;font-size:14px;">"Show monthly revenue trends as a line chart with one line per channel"</p>
+          </div>
+          <span style="color:#9ca3af;font-size:13px;white-space:nowrap;">80.9s</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;">
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Quality Score</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:80px;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
+          <div style="width:100%;height:100%;background:#059669;border-radius:4px;"></div>
+        </div>
+        <span style="font-weight:600;">5/5</span>
+      </div>
+          </div>
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Charts</div>
+            <div style="font-weight:600;color:#111827;">2 generated</div>
+          </div>
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Report</div>
+            <div style="font-weight:600;color:#059669;">Yes</div>
+          </div>
+        </div>
+
+        <div style="background:#fffbeb;border-left:3px solid #d97706;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#92400e;">
+          <strong>Judge:</strong> The agent delivers an excellent response that fully meets and exceeds the rubric. The primary chart (chart_1) is a properly constructed multi-line chart with month on x-axis, revenue on y-axis, and one line per channel — exactly as requested. The code is clean, uses real columns (month, channel, revenue), and applies proper date formatting, dollar formatting, and styling. A bonus stacked area chart (chart_2) adds useful context on revenue mix shifts. The report goes well beyond restating numbers: it identifies which channels are growing vs. declining, quantifies MoM growth rates, explains possible causes (campaign saturation, seasonal pullback), highlights LinkedIn as the sole growth channel, and provides three concrete, actionable recommendations. The tool sequence (planAnalysis → executeAnalysis → composeReport) is logical. The executive summary, data tables, and narrative analysis are all well-structured and insightful.
+        </div>
+
+        <div style="font-size:13px;color:#6b7280;margin-bottom:8px;">
+          <strong>Rubric:</strong> The agent should produce a line chart with month on x-axis and revenue on y-axis, one line per channel. The report should discuss growth trends, which channels are growing/declining.
+        </div>
+        <div style="font-size:13px;color:#6b7280;margin-bottom:12px;">
+          <strong>Tools:</strong> <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">planAnalysis</code> → <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">executeAnalysis</code> → <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">composeReport</code>
+        </div>
+
+        <details><summary style="cursor:pointer;color:#6366f1;font-size:13px;">Generated Python (88 lines)</summary>
+           <pre style="background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;margin-top:8px;">
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+import json
+import numpy as np
+
+# Load and prep
+df['month'] = pd.to_datetime(df['month'])
+monthly = df.groupby(['month', 'channel'])['revenue'].sum().reset_index()
+pivot = monthly.pivot(index='month', columns='channel', values='revenue').fillna(0).sort_index()
+
+channels = pivot.columns.tolist()
+colors = ['#4C72B0', '#DD8452', '#55A868', '#C44E52', '#8172B2', '#937860']
+
+# ── Chart 1: Multi-line revenue trend ──────────────────────────────────────
+fig, ax = plt.subplots(figsize=(12, 6))
+for i, ch in enumerate(channels):
+    ax.plot(pivot.index, pivot[ch], marker='o', linewidth=2.2,
+            markersize=5, label=ch, color=colors[i % len(colors)])
+
+ax.set_title('Monthly Revenue by Channel', fontsize=16, fontweight='bold', pad=14)
+ax.set_xlabel('Month', fontsize=12)
+ax.set_ylabel('Revenue ($)', fontsize=12)
+ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'${x:,.0f}'))
+ax.xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%b %Y'))
+plt.xticks(rotation=45, ha='right')
+ax.legend(title='Channel', fontsize=10, title_fontsize=11)
+ax.grid(axis='y', linestyle='--', alpha=0.4)
+ax.spines[['top', 'right']].set_visible(False)
+plt.tight_layout()
+plt.savefig('chart_1.png', dpi=150)
+plt.close()
+
+# ── Chart 2: Stacked area – revenue share ──────────────────────────────────
+share = pivot.div(pivot.sum(axis=1), axis=0) * 100
+
+fig, ax = plt.subplots(figsize=(12, 6))
+ax.stackplot(share.index, [share[ch] for ch in channels],
+             labels=channels, colors=colors[:len(channels)], alpha=0.85)
+
+ax.set_title('Monthly Revenue Mix by Channel (%)', fontsize=16, fontweight='bold', pad=14)
+ax.set_xlabel('Month', fontsize=12)
+ax.set_ylabel('Share of Revenue (%)', fontsize=12)
+ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'{x:.0f}%'))
+ax.xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%b %Y'))
+plt.xticks(rotation=45, ha='right')
+ax.legend(title='Channel', loc='upper left', fontsize=10, title_fontsize=11)
+ax.set_ylim(0, 100)
+ax.grid(axis='y', linestyle='--', alpha=0.3)
+ax.spines[['top', 'right']].set_visible(False)
+plt.tight_layout()
+plt.savefig('chart_2.png', dpi=150)
+plt.close()
+
+# ── Findings ───────────────────────────────────────────────────────────────
+total_by_channel = pivot.sum().to_dict()
+total_all = sum(total_by_channel.values())
+
+# MoM growth per channel (last vs first month with data)
+mom_avg = {}
+for ch in channels:
+    s = pivot[ch].replace(0, np.nan).dropna()
+    if len(s) &gt;= 2:
+        pct_changes = s.pct_change().dropna() * 100
+        mom_avg[ch] = round(pct_changes.mean(), 2)
+
+# Peak month per channel
+peak_month = {}
+for ch in channels:
+    idx = pivot[ch].idxmax()
+    peak_month[ch] = {'month': str(idx.strftime('%b %Y')), 'revenue': round(pivot[ch].max(), 2)}
+
+# Overall date range
+date_range = f&quot;{pivot.index.min().strftime('%b %Y')} – {pivot.index.max().strftime('%b %Y')}&quot;
+
+findings = {
+    &quot;date_range&quot;: date_range,
+    &quot;channels&quot;: channels,
+    &quot;total_revenue_by_channel&quot;: {k: round(v, 2) for k, v in total_by_channel.items()},
+    &quot;revenue_share_pct&quot;: {k: round(v / total_all * 100, 2) for k, v in total_by_channel.items()},
+    &quot;avg_mom_growth_pct&quot;: mom_avg,
+    &quot;peak_month_by_channel&quot;: peak_month,
+    &quot;total_revenue_all&quot;: round(total_all, 2)
+}
+
+print(json.dumps(findings))
+</pre></details>
+        <details><summary style="cursor:pointer;color:#6366f1;font-size:13px;">Report (3311 chars)</summary>
+           <pre style="background:#f8fafc;color:#334155;padding:12px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;margin-top:8px;white-space:pre-wrap;">
+## Executive Summary
+
+Across the **Jan–Mar 2024** window, total revenue reached **$756,900** distributed across four channels: **Email** (32.7%), **Google Ads** (32.6%), **Meta** (30.8%), and **LinkedIn** (4.0%). All three major channels peaked in January and declined through March, suggesting a possible post-holiday or seasonal pull-back rather than a structural problem. LinkedIn is the outlier — small in absolute terms but showing positive average month-over-month growth.
+
+---
+
+## Monthly Revenue by Channel
+
+**chart_1** — *Multi-line monthly revenue trend showing each channel's trajectory Jan–Mar 2024.*
+
+| Channel | Total Revenue | Revenue Share | Peak Month | Peak Revenue |
+|---|---|---|---|---|
+| Email | $247,200 | 32.7% | Jan 2024 | $98,200 |
+| Google Ads | $246,700 | 32.6% | Jan 2024 | $110,500 |
+| Meta | $233,000 | 30.8% | Jan 2024 | $106,500 |
+| LinkedIn | $30,000 | 4.0% | Feb 2024 | $15,600 |
+
+The three dominant channels — Email, Google Ads, and Meta — are nearly equal in total contribution over the period. LinkedIn lags significantly but is growing.
+
+---
+
+## Channel Growth Rates &amp; Peak Periods
+
+All major channels posted **negative average month-over-month growth** during the analysis window, consistent with a January spike followed by a pullback:
+
+| Channel | Avg MoM Growth |
+|---|---|
+| Meta | –32.6% |
+| Google Ads | –30.5% |
+| Email | –22.4% |
+| LinkedIn | **+8.3%** |
+
+**Key observations:**
+- **Meta and Google Ads are declining fastest.** Both dropped ~30–33% on average month-over-month, suggesting either campaign saturation, budget reductions, or diminishing returns after a January push.
+- **Email is more resilient** — still declining, but at the slowest pace (–22%) of the paid/owned channels. Its relatively lower peak-month concentration suggests more stable demand.
+- **LinkedIn is the only growing channel (+8.3% MoM).** While it represents less than 4% of total revenue, its upward trajectory deserves attention as a potential growth vector.
+
+---
+
+## Revenue Mix &amp; Share by Channel
+
+**chart_2** — *Stacked area chart showing each channel's share of total monthly revenue over time.*
+
+The revenue mix shifts subtly across the three months. As Meta and Google Ads decline more steeply, Email's share of total revenue increases through the quarter, reinforcing its relative stability. LinkedIn's share also gradually rises from near-zero to a slightly more visible slice.
+
+---
+
+## Recommended Actions
+
+1. **Investigate the Meta &amp; Google Ads decline.** A –30%+ average MoM drop is significant. Audit campaign performance, audience saturation, and budget pacing from January onward. If the January spike was driven by a specific promotion, plan for a smoother spend distribution to avoid sharp post-campaign troughs.
+
+2. **Double down on Email's resilience.** Email is declining at the slowest rate and has the most balanced revenue distribution across months. Consider increasing investment in email list growth and segmentation to make it an even stronger anchor channel.
+
+3. **Test LinkedIn for scale.** LinkedIn is the only channel with positive momentum (+8.3% MoM). It currently represents only ~4% of revenue — run controlled budget experiments to test whether its performance holds at higher spend levels, particularly for B2B or high-value audience segments.
+</pre></details>
+      </div>
+
+      <div style="border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:16px;background:white;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+              <span style="background:#ecfdf5;color:#059669;font-weight:700;font-size:12px;padding:2px 10px;border-radius:999px;letter-spacing:0.05em;">PASS</span>
+              <h3 style="margin:0;font-size:16px;font-weight:600;color:#111827;">conversion-funnel</h3>
+            </div>
+            <p style="margin:4px 0 0;color:#6b7280;font-size:14px;">"Show a bar chart comparing impressions, clicks, and conversions by channel"</p>
+          </div>
+          <span style="color:#9ca3af;font-size:13px;white-space:nowrap;">70.8s</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;">
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Quality Score</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:80px;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
+          <div style="width:100%;height:100%;background:#059669;border-radius:4px;"></div>
+        </div>
+        <span style="font-weight:600;">5/5</span>
+      </div>
+          </div>
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Charts</div>
+            <div style="font-weight:600;color:#111827;">1 generated</div>
+          </div>
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Report</div>
+            <div style="font-weight:600;color:#059669;">Yes</div>
+          </div>
+        </div>
+
+        <div style="background:#fffbeb;border-left:3px solid #d97706;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#92400e;">
+          <strong>Judge:</strong> The agent fully meets and exceeds the rubric requirements. The grouped bar chart correctly shows all three metrics (impressions, clicks, conversions) side-by-side for each channel, making the funnel drop-off visually obvious. The report includes a well-structured table with CTR and conversion rates, directly addresses where each channel loses prospects (e.g., LinkedIn's low CTR and conversion rate, Meta's volume-to-conversion gap), and provides actionable recommendations for each channel. The Python code is clean, uses real dataset columns (channel, impressions, clicks, conversions), includes value labels on bars for readability, and handles the large scale differences between metrics appropriately. The insights go beyond restating numbers — they compare efficiency vs. volume trade-offs and prioritize investment decisions.
+        </div>
+
+        <div style="font-size:13px;color:#6b7280;margin-bottom:8px;">
+          <strong>Rubric:</strong> The agent should produce a chart showing all three metrics by channel, making the funnel drop-off visible. The report should discuss conversion rates and where each channel loses the most prospects.
+        </div>
+        <div style="font-size:13px;color:#6b7280;margin-bottom:12px;">
+          <strong>Tools:</strong> <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">planAnalysis</code> → <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">executeAnalysis</code> → <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">composeReport</code>
+        </div>
+
+        <details><summary style="cursor:pointer;color:#6366f1;font-size:13px;">Generated Python (68 lines)</summary>
+           <pre style="background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;margin-top:8px;">
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+import numpy as np
+import json
+
+# Aggregate metrics by channel
+agg = df.groupby('channel')[['impressions', 'clicks', 'conversions']].sum().reset_index()
+agg['ctr'] = (agg['clicks'] / agg['impressions'] * 100).round(2)
+agg['conv_rate'] = (agg['conversions'] / agg['clicks'] * 100).round(2)
+
+channels = agg['channel'].tolist()
+x = np.arange(len(channels))
+width = 0.25
+
+fig, ax = plt.subplots(figsize=(11, 6))
+
+bars1 = ax.bar(x - width, agg['impressions'], width, label='Impressions', color='#4C72B0', zorder=3)
+bars2 = ax.bar(x,          agg['clicks'],      width, label='Clicks',      color='#55A868', zorder=3)
+bars3 = ax.bar(x + width,  agg['conversions'], width, label='Conversions', color='#C44E52', zorder=3)
+
+# Labels on bars
+def autolabel(bars, fmt='{:,.0f}'):
+    for bar in bars:
+        h = bar.get_height()
+        ax.annotate(fmt.format(h),
+                    xy=(bar.get_x() + bar.get_width() / 2, h),
+                    xytext=(0, 4), textcoords='offset points',
+                    ha='center', va='bottom', fontsize=8.5, color='#333333')
+
+autolabel(bars1)
+autolabel(bars2)
+autolabel(bars3)
+
+ax.set_xticks(x)
+ax.set_xticklabels(channels, fontsize=12)
+ax.set_ylabel('Count', fontsize=11)
+ax.set_title('Impressions, Clicks &amp; Conversions by Channel', fontsize=14, fontweight='bold', pad=14)
+ax.legend(fontsize=10)
+ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f'{v:,.0f}'))
+ax.grid(axis='y', linestyle='--', alpha=0.5, zorder=0)
+ax.set_axisbelow(True)
+plt.tight_layout()
+plt.savefig('chart_1.png', dpi=150)
+plt.close()
+
+# Build findings
+findings = {
+    &quot;channels&quot;: channels,
+    &quot;totals&quot;: {
+        row['channel']: {
+            &quot;impressions&quot;: int(row['impressions']),
+            &quot;clicks&quot;: int(row['clicks']),
+            &quot;conversions&quot;: int(row['conversions']),
+            &quot;ctr_pct&quot;: float(row['ctr']),
+            &quot;conv_rate_pct&quot;: float(row['conv_rate'])
+        }
+        for _, row in agg.iterrows()
+    },
+    &quot;top_impressions&quot;: agg.loc[agg['impressions'].idxmax(), 'channel'],
+    &quot;top_clicks&quot;: agg.loc[agg['clicks'].idxmax(), 'channel'],
+    &quot;top_conversions&quot;: agg.loc[agg['conversions'].idxmax(), 'channel'],
+    &quot;top_ctr&quot;: agg.loc[agg['ctr'].idxmax(), 'channel'],
+    &quot;top_conv_rate&quot;: agg.loc[agg['conv_rate'].idxmax(), 'channel'],
+}
+print(json.dumps(findings))
+</pre></details>
+        <details><summary style="cursor:pointer;color:#6366f1;font-size:13px;">Report (2642 chars)</summary>
+           <pre style="background:#f8fafc;color:#334155;padding:12px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;margin-top:8px;white-space:pre-wrap;">## Channel Performance: Impressions, Clicks &amp; Conversions
+
+### Executive Summary
+Across all four marketing channels — **Email, Google Ads, LinkedIn, and Meta** — performance varies significantly in both volume and efficiency. Meta leads in raw scale, while **Email is the standout efficiency champion**, converting at more than double the rate of any other channel.
+
+---
+
+### Impressions, Clicks &amp; Conversions by Channel
+
+**chart_1** — Grouped bar chart showing total impressions, clicks, and conversions side-by-side for each channel.
+
+| Channel | Impressions | Clicks | Conversions | CTR | Conv. Rate |
+|---|---|---|---|---|---|
+| Email | 216,000 | 26,400 | 2,000 | **12.22%** | **7.58%** |
+| Google Ads | 1,020,000 | 48,700 | 1,725 | 4.77% | 3.54% |
+| LinkedIn | 133,000 | 4,300 | 100 | 3.23% | 2.33% |
+| Meta | 1,995,000 | 66,300 | 2,065 | 3.32% | 3.11% |
+
+---
+
+### Key Findings
+
+1. **Meta dominates in volume** — Meta generates the highest impressions (≈2M), clicks (66K), and raw conversions (2,065), making it the top channel by absolute output. However, its efficiency metrics are among the lowest.
+
+2. **Email wins on efficiency** — Despite having only 216K impressions, Email achieves a **12.22% CTR** and a **7.58% conversion rate** — roughly 3× better than Meta and Google Ads. Its 2,000 conversions rival Meta's 2,065 at a fraction of the audience reach.
+
+3. **Google Ads sits in the middle** — With 1M impressions and a 3.54% conversion rate, Google Ads delivers reasonable volume and moderate efficiency, though it falls short of Email on both CTR and conversion rate.
+
+4. **LinkedIn underperforms on conversions** — LinkedIn drives the fewest conversions (100) and has the lowest CTR (3.23%) and conversion rate (2.33%). Its limited scale and lower efficiency suggest it may need audience or creative adjustments.
+
+---
+
+### Recommended Actions
+
+1. **Scale Email investment** — Email's efficiency (CTR of 12.22%, CVR of 7.58%) is exceptional. Expanding list size, frequency, or segmentation to drive higher impression volume could yield significant conversion gains with strong ROI.
+
+2. **Audit LinkedIn targeting and creative** — LinkedIn's conversion rate (2.33%) and raw conversions (100) are the weakest of all channels. Revisit audience targeting, ad copy, or landing page relevance before continuing to invest at current levels.
+
+3. **Optimize Meta for conversion efficiency** — Meta's large reach is an asset, but its 3.11% conversion rate leaves room for improvement. A/B testing ad creatives, refining audience segments, or improving post-click experience could meaningfully lift conversions without increasing spend.
+</pre></details>
+      </div>
+
+      <div style="border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:16px;background:white;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+              <span style="background:#ecfdf5;color:#059669;font-weight:700;font-size:12px;padding:2px 10px;border-radius:999px;letter-spacing:0.05em;">PASS</span>
+              <h3 style="margin:0;font-size:16px;font-weight:600;color:#111827;">regional-comparison</h3>
+            </div>
+            <p style="margin:4px 0 0;color:#6b7280;font-size:14px;">"Compare total revenue by region as a horizontal bar chart"</p>
+          </div>
+          <span style="color:#9ca3af;font-size:13px;white-space:nowrap;">88.3s</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;">
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Quality Score</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:80px;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
+          <div style="width:100%;height:100%;background:#059669;border-radius:4px;"></div>
+        </div>
+        <span style="font-weight:600;">5/5</span>
+      </div>
+          </div>
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Charts</div>
+            <div style="font-weight:600;color:#111827;">1 generated</div>
+          </div>
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Report</div>
+            <div style="font-weight:600;color:#059669;">Yes</div>
+          </div>
+        </div>
+
+        <div style="background:#fffbeb;border-left:3px solid #d97706;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#92400e;">
+          <strong>Judge:</strong> The agent fully satisfies all rubric criteria and exceeds expectations. The tool sequence is logical (executeAnalysis → executeAnalysis → composeReport). The Python code is clean, uses real column names ('revenue', 'region'), correctly produces a horizontal bar chart with labeled values and percentages, and handles dynamic sizing. The report clearly identifies North America as the top-performing region (2.7× more revenue), provides a structured breakdown table, and offers three actionable recommendations including investigating the gap, assessing Europe's growth potential, and expanding regional coverage. Insights go beyond restating numbers by suggesting ROAS analysis and sub-regional segmentation. Styling is professional with Blues colormap, spine cleanup, and formatted axis labels.
+        </div>
+
+        <div style="font-size:13px;color:#6b7280;margin-bottom:8px;">
+          <strong>Rubric:</strong> The agent should produce a horizontal bar chart comparing regions. The report should discuss which region performs better and suggest where to invest more.
+        </div>
+        <div style="font-size:13px;color:#6b7280;margin-bottom:12px;">
+          <strong>Tools:</strong> <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">executeAnalysis</code> → <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">executeAnalysis</code> → <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">composeReport</code>
+        </div>
+
+        <details><summary style="cursor:pointer;color:#6366f1;font-size:13px;">Generated Python (55 lines)</summary>
+           <pre style="background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;margin-top:8px;">
+import pandas as pd
+import matplotlib
+import matplotlib.pyplot as plt
+import json
+
+revenue_col = 'revenue'
+region_col  = 'region'
+
+# Aggregate
+rev_by_region = (
+    df.groupby(region_col)[revenue_col]
+    .sum()
+    .sort_values(ascending=True)
+)
+
+total = float(rev_by_region.sum())
+pct   = (rev_by_region / total * 100).round(1)
+
+# ── Chart ──────────────────────────────────────────────────────────────────
+fig, ax = plt.subplots(figsize=(9, max(4, len(rev_by_region) * 0.65)))
+
+colors = plt.cm.Blues([0.4 + 0.5 * i / max(len(rev_by_region) - 1, 1)
+                        for i in range(len(rev_by_region))])
+
+bars = ax.barh(rev_by_region.index, rev_by_region.values, color=colors, edgecolor='white', height=0.6)
+
+for bar, val, p in zip(bars, rev_by_region.values, pct.values):
+    ax.text(bar.get_width() + total * 0.005, bar.get_y() + bar.get_height() / 2,
+            f&quot;${val:,.0f}  ({p}%)&quot;, va='center', fontsize=9.5, color='#333333')
+
+ax.set_xlabel('Total Revenue ($)', fontsize=11)
+ax.set_title('Total Revenue by Region', fontsize=14, fontweight='bold', pad=14)
+ax.xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, _: f'${x:,.0f}'))
+ax.spines[['top', 'right']].set_visible(False)
+ax.set_xlim(0, total * 1.28)
+plt.tight_layout()
+plt.savefig('chart_1.png', dpi=150, bbox_inches='tight')
+plt.close()
+
+# ── Findings ───────────────────────────────────────────────────────────────
+findings = {
+    &quot;total_revenue&quot;: round(total, 2),
+    &quot;regions&quot;: rev_by_region.index.tolist(),
+    &quot;revenue_by_region&quot;: {k: round(float(v), 2) for k, v in rev_by_region.items()},
+    &quot;pct_by_region&quot;:     {k: float(v) for k, v in pct.items()},
+    &quot;top_region&quot;:        str(rev_by_region.idxmax()),
+    &quot;top_region_revenue&quot;: round(float(rev_by_region.max()), 2),
+    &quot;top_region_pct&quot;:    round(float(pct.max()), 1),
+    &quot;bottom_region&quot;:     str(rev_by_region.idxmin()),
+    &quot;bottom_region_revenue&quot;: round(float(rev_by_region.min()), 2),
+    &quot;bottom_region_pct&quot;: round(float(pct.min()), 1),
+}
+print(json.dumps(findings))
+</pre></details>
+        <details><summary style="cursor:pointer;color:#6366f1;font-size:13px;">Report (1826 chars)</summary>
+           <pre style="background:#f8fafc;color:#334155;padding:12px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;margin-top:8px;white-space:pre-wrap;">## Total Revenue by Region
+
+### Executive Summary
+Across all campaigns in the dataset, total revenue stands at **$756,900**, split between two regions. **North America dominates**, contributing nearly three-quarters of all revenue, while Europe accounts for the remaining quarter.
+
+---
+
+### Revenue Breakdown
+
+| Region | Total Revenue | Share |
+|---|---|---|
+| **North America** | $552,900 | 73% |
+| **Europe** | $204,000 | 27% |
+| **Total** | $756,900 | 100% |
+
+---
+
+### Chart
+
+**chart_1** — Horizontal bar chart comparing total revenue by region, with dollar values and percentage share labeled on each bar.
+
+---
+
+### Key Findings
+
+- **North America is the top-performing region**, generating $552,900 — **2.7× more revenue than Europe** ($204,000).
+- Europe represents a meaningful but significantly smaller slice at 27% of total revenue, suggesting either lower spend allocation, lower conversion efficiency, or smaller market penetration in that region.
+- The dataset covers only two regions, so the revenue distribution is highly concentrated.
+
+---
+
+### Recommended Actions
+
+1. **Investigate the North America–Europe gap** — Determine whether the disparity reflects differences in marketing spend, audience size, channel mix, or conversion rates. A deeper channel-level breakdown by region would clarify root causes.
+
+2. **Assess Europe's growth potential** — If spend in Europe is proportionally lower than in North America, there may be an opportunity to scale investment. Calculate ROAS by region to confirm whether European campaigns are efficient before increasing budget.
+
+3. **Expand regional coverage in reporting** — With only two regions tracked, strategic blind spots may exist. Consider segmenting further (e.g., by country or sub-region) to identify high-performing pockets within Europe and North America.
+</pre></details>
+      </div>
+
+      <div style="border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:16px;background:white;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+              <span style="background:#ecfdf5;color:#059669;font-weight:700;font-size:12px;padding:2px 10px;border-radius:999px;letter-spacing:0.05em;">PASS</span>
+              <h3 style="margin:0;font-size:16px;font-weight:600;color:#111827;">hallucination-guard</h3>
+            </div>
+            <p style="margin:4px 0 0;color:#6b7280;font-size:14px;">"Show me customer lifetime value by cohort"</p>
+          </div>
+          <span style="color:#9ca3af;font-size:13px;white-space:nowrap;">173.3s</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;">
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Quality Score</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:80px;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
+          <div style="width:100%;height:100%;background:#059669;border-radius:4px;"></div>
+        </div>
+        <span style="font-weight:600;">5/5</span>
+      </div>
+          </div>
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Charts</div>
+            <div style="font-weight:600;color:#111827;">3 generated</div>
+          </div>
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Report</div>
+            <div style="font-weight:600;color:#059669;">Yes</div>
+          </div>
+        </div>
+
+        <div style="background:#fffbeb;border-left:3px solid #d97706;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#92400e;">
+          <strong>Judge:</strong> The agent handled the missing LTV/cohort columns excellently. It clearly acknowledged the limitation upfront with a methodology note, then creatively and correctly approximated LTV using revenue per conversion (a valid proxy) and treated channels as cohorts tracked over time. The Python code uses only real, plausible columns (spend, revenue, conversions, channel, month) with no fabrication. The three charts are well-chosen: heatmap for cohort-by-month view, line chart for growth curves, and dual-axis bar for volume vs. value tradeoff. The report delivers genuinely meaningful insights beyond restating numbers — identifying the volume/quality tension, the Email efficiency story, and the LinkedIn high-value signal. Actionable recommendations are specific and strategically sound. This exceeds rubric expectations on all dimensions.
+        </div>
+
+        <div style="font-size:13px;color:#6b7280;margin-bottom:8px;">
+          <strong>Rubric:</strong> The dataset has no LTV or cohort columns. The agent should either explain that these columns don't exist and suggest alternatives, OR creatively approximate using available data (e.g. revenue per customer proxy). Either approach is acceptable — fabricating non-existent columns is not.
+        </div>
+        <div style="font-size:13px;color:#6b7280;margin-bottom:12px;">
+          <strong>Tools:</strong> <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">planAnalysis</code> → <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">executeAnalysis</code> → <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">executeAnalysis</code> → <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">composeReport</code>
+        </div>
+
+        <details><summary style="cursor:pointer;color:#6366f1;font-size:13px;">Generated Python (149 lines)</summary>
+           <pre style="background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;margin-top:8px;">
+import pandas as pd
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+import json
+
+# ── Load &amp; prep ──────────────────────────────────────────────────────────────
+df = pd.read_csv(&quot;data.csv&quot;)
+df.columns = df.columns.str.strip().str.lower().str.replace(&quot; &quot;, &quot;_&quot;)
+
+df[&quot;date&quot;] = pd.to_datetime(df[&quot;month&quot;])
+df = df.sort_values(&quot;date&quot;)
+
+min_date = df[&quot;date&quot;].min()
+df[&quot;month_idx&quot;] = ((df[&quot;date&quot;].dt.year - min_date.year) * 12 +
+                   (df[&quot;date&quot;].dt.month - min_date.month))
+
+channels = df[&quot;channel&quot;].unique()
+palette  = [&quot;#4C72B0&quot;, &quot;#DD8452&quot;, &quot;#55A868&quot;, &quot;#C44E52&quot;,
+            &quot;#8172B2&quot;, &quot;#937860&quot;, &quot;#DA8BC3&quot;, &quot;#8C8C8C&quot;]
+ch_color = {ch: palette[i % len(palette)] for i, ch in enumerate(sorted(channels))}
+
+# ── Per-channel cumulative stats ──────────────────────────────────────────────
+ch_monthly = (df.groupby([&quot;channel&quot;, &quot;month_idx&quot;, &quot;date&quot;])
+                .agg(spend=(&quot;spend&quot;,&quot;sum&quot;),
+                     revenue=(&quot;revenue&quot;,&quot;sum&quot;),
+                     conversions=(&quot;conversions&quot;,&quot;sum&quot;))
+                .reset_index()
+                .sort_values([&quot;channel&quot;,&quot;month_idx&quot;]))
+
+ch_monthly[[&quot;cum_spend&quot;,&quot;cum_revenue&quot;,&quot;cum_conv&quot;]] = (
+    ch_monthly.groupby(&quot;channel&quot;)[[&quot;spend&quot;,&quot;revenue&quot;,&quot;conversions&quot;]].cumsum())
+
+ch_monthly[&quot;cum_roas&quot;]      = ch_monthly[&quot;cum_revenue&quot;] / ch_monthly[&quot;cum_spend&quot;]
+ch_monthly[&quot;cum_cac&quot;]       = ch_monthly[&quot;cum_spend&quot;]   / ch_monthly[&quot;cum_conv&quot;].replace(0, np.nan)
+ch_monthly[&quot;cum_rev_pconv&quot;] = ch_monthly[&quot;cum_revenue&quot;] / ch_monthly[&quot;cum_conv&quot;].replace(0, np.nan)
+
+# ── Final-state summary ───────────────────────────────────────────────────────
+final = ch_monthly.groupby(&quot;channel&quot;).last().reset_index()
+final = final[[&quot;channel&quot;,&quot;cum_spend&quot;,&quot;cum_revenue&quot;,&quot;cum_conv&quot;,
+               &quot;cum_roas&quot;,&quot;cum_cac&quot;,&quot;cum_rev_pconv&quot;]].sort_values(&quot;cum_rev_pconv&quot;, ascending=False)
+
+# ── CHART 1: Heatmap – cumulative Revenue/Conversion by channel × month ──────
+pivot = ch_monthly.pivot(index=&quot;channel&quot;, columns=&quot;month_idx&quot;, values=&quot;cum_rev_pconv&quot;)
+
+fig, ax = plt.subplots(figsize=(14, 4.5))
+im = ax.imshow(pivot.values, aspect=&quot;auto&quot;, cmap=&quot;YlGn&quot;)
+
+ax.set_xticks(range(pivot.shape[1]))
+ax.set_xticklabels([f&quot;M{c}&quot; for c in pivot.columns], fontsize=8)
+ax.set_yticks(range(len(pivot.index)))
+ax.set_yticklabels(pivot.index, fontsize=10)
+ax.set_title(&quot;Cumulative Revenue per Conversion (LTV Proxy) — Heatmap by Channel &amp; Month&quot;, fontsize=12, pad=10)
+ax.set_xlabel(&quot;Months Since Dataset Start&quot;, fontsize=9)
+
+vmax = np.nanmax(pivot.values)
+for r in range(pivot.shape[0]):
+    for c in range(pivot.shape[1]):
+        val = pivot.values[r, c]
+        if not np.isnan(val):
+            txt_col = &quot;white&quot; if val &gt; vmax * 0.7 else &quot;black&quot;
+            ax.text(c, r, f&quot;${val:,.0f}&quot;, ha=&quot;center&quot;, va=&quot;center&quot;,
+                    fontsize=7, color=txt_col)
+
+cbar = fig.colorbar(im, ax=ax, shrink=0.8)
+cbar.set_label(&quot;Cumul. Rev / Conversion ($)&quot;, fontsize=8)
+plt.tight_layout()
+plt.savefig(&quot;chart_1.png&quot;, dpi=150)
+plt.close()
+
+# ── CHART 2: Line chart – LTV growth curves ───────────────────────────────────
+fig, ax = plt.subplots(figsize=(12, 5))
+for ch in sorted(channels):
+    sub = ch_monthly[ch_monthly[&quot;channel&quot;] == ch]
+    ax.plot(sub[&quot;month_idx&quot;], sub[&quot;cum_rev_pconv&quot;],
+            marker=&quot;o&quot;, markersize=4, label=ch, color=ch_color[ch], linewidth=2)
+    last = sub.iloc[-1]
+    ax.annotate(f&quot;  {ch}\n  ${last['cum_rev_pconv']:,.0f}&quot;,
+                xy=(last[&quot;month_idx&quot;], last[&quot;cum_rev_pconv&quot;]),
+                fontsize=8, color=ch_color[ch], va=&quot;center&quot;)
+
+ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f&quot;${x:,.0f}&quot;))
+ax.set_xlabel(&quot;Months Since Dataset Start&quot;, fontsize=10)
+ax.set_ylabel(&quot;Cumulative Revenue per Conversion ($)&quot;, fontsize=10)
+ax.set_title(&quot;LTV Growth Curves by Channel Cohort&quot;, fontsize=13)
+ax.legend(fontsize=9, loc=&quot;upper left&quot;)
+ax.grid(axis=&quot;y&quot;, alpha=0.3)
+plt.tight_layout()
+plt.savefig(&quot;chart_2.png&quot;, dpi=150)
+plt.close()
+
+# ── CHART 3: Volume vs. Value bar chart ───────────────────────────────────────
+fig, ax1 = plt.subplots(figsize=(10, 5))
+ax2 = ax1.twinx()
+
+x     = np.arange(len(final))
+width = 0.4
+ax1.bar(x - width/2, final[&quot;cum_conv&quot;], width,
+        color=[ch_color[c] for c in final[&quot;channel&quot;]], alpha=0.85, label=&quot;Total Conversions&quot;)
+ax2.bar(x + width/2, final[&quot;cum_rev_pconv&quot;], width,
+        color=[ch_color[c] for c in final[&quot;channel&quot;]], alpha=0.45,
+        hatch=&quot;///&quot;, label=&quot;Revenue/Conversion ($)&quot;)
+
+ax1.set_xticks(x)
+ax1.set_xticklabels(final[&quot;channel&quot;], fontsize=10)
+ax1.set_ylabel(&quot;Total Conversions&quot;, fontsize=10)
+ax2.set_ylabel(&quot;Cumulative Revenue per Conversion ($)&quot;, fontsize=10)
+ax1.set_title(&quot;Channel Cohort — Volume (Conversions) vs. Value (LTV Proxy)&quot;, fontsize=12)
+ax2.yaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f&quot;${v:,.0f}&quot;))
+
+h1, l1 = ax1.get_legend_handles_labels()
+h2, l2 = ax2.get_legend_handles_labels()
+ax1.legend(h1 + h2, l1 + l2, loc=&quot;upper right&quot;, fontsize=9)
+ax1.grid(axis=&quot;y&quot;, alpha=0.3)
+plt.tight_layout()
+plt.savefig(&quot;chart_3.png&quot;, dpi=150)
+plt.close()
+
+# ── Findings JSON ─────────────────────────────────────────────────────────────
+findings = {
+    &quot;total_channels&quot;: int(len(channels)),
+    &quot;date_range&quot;: f&quot;{df['date'].min().strftime('%b %Y')} – {df['date'].max().strftime('%b %Y')}&quot;,
+    &quot;total_months&quot;: int(df[&quot;month_idx&quot;].max() + 1),
+    &quot;channel_summary&quot;: [
+        {
+            &quot;channel&quot;:           row[&quot;channel&quot;],
+            &quot;total_spend&quot;:       round(row[&quot;cum_spend&quot;], 2),
+            &quot;total_revenue&quot;:     round(row[&quot;cum_revenue&quot;], 2),
+            &quot;total_conversions&quot;: int(row[&quot;cum_conv&quot;]),
+            &quot;overall_roas&quot;:      round(row[&quot;cum_roas&quot;], 2),
+            &quot;cac&quot;:               round(row[&quot;cum_cac&quot;], 2),
+            &quot;ltv_proxy&quot;:         round(row[&quot;cum_rev_pconv&quot;], 2),
+        }
+        for _, row in final.iterrows()
+    ],
+    &quot;top_ltv_channel&quot;:    final.iloc[0][&quot;channel&quot;],
+    &quot;top_ltv_value&quot;:      round(final.iloc[0][&quot;cum_rev_pconv&quot;], 2),
+    &quot;lowest_ltv_channel&quot;: final.iloc[-1][&quot;channel&quot;],
+    &quot;lowest_ltv_value&quot;:   round(final.iloc[-1][&quot;cum_rev_pconv&quot;], 2),
+    &quot;top_roas_channel&quot;:   final.loc[final[&quot;cum_roas&quot;].idxmax(), &quot;channel&quot;],
+    &quot;top_roas_value&quot;:     round(final[&quot;cum_roas&quot;].max(), 2),
+    &quot;lowest_cac_channel&quot;: final.loc[final[&quot;cum_cac&quot;].idxmin(), &quot;channel&quot;],
+    &quot;lowest_cac_value&quot;:   round(final[&quot;cum_cac&quot;].min(), 2),
+}
+
+print(json.dumps(findings))
+</pre></details>
+        <details><summary style="cursor:pointer;color:#6366f1;font-size:13px;">Report (4761 chars)</summary>
+           <pre style="background:#f8fafc;color:#334155;padding:12px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;margin-top:8px;white-space:pre-wrap;">
+## Customer Lifetime Value by Channel Cohort
+
+&gt; **Note on methodology:** This dataset contains campaign-level marketing data (spend, impressions, clicks, conversions, revenue by channel/month) — not individual customer transaction records. LTV is therefore computed as a **channel-cohort proxy**: cumulative revenue per conversion, alongside ROAS and CAC, treating each marketing channel as an acquisition cohort tracked over time (Jan–Mar 2024).
+
+---
+
+## Executive Summary
+
+Across 4 channels tracked over **3 months (Jan–Mar 2024)**, **LinkedIn** delivers the highest revenue per conversion ($300), while **Email** leads on ROAS (23.1×) and lowest CAC ($5.35). **Meta** lags on all value metrics despite generating the most conversions. The data reveals a clear tension between acquisition volume and per-customer quality — a signal for strategic reallocation.
+
+---
+
+## Dataset Overview
+
+| Metric | Value |
+|---|---|
+| Channels analyzed | 4 (Email, Google Ads, LinkedIn, Meta) |
+| Date range | Jan 2024 – Mar 2024 |
+| Months tracked | 3 |
+
+---
+
+## LTV Heatmap Analysis (chart_1)
+
+The heatmap shows **cumulative revenue per conversion** (LTV proxy) across channels and months.
+
+**chart_1** — *Heatmap of cumulative LTV proxy (revenue/conversion) by channel and month. Darker cells indicate higher per-customer value.*
+
+Key observations:
+- **LinkedIn** maintains consistently high per-conversion revenue throughout the period — values are visually distinct (darker) compared to other channels.
+- **Email and Google Ads** show steady LTV accumulation, with Email accelerating quickly due to very high revenue relative to conversions.
+- **Meta**'s LTV proxy remains the lowest of all channels across all months.
+
+---
+
+## LTV Growth Curves by Channel (chart_2)
+
+**chart_2** — *Line chart showing cumulative revenue per conversion over time for each channel cohort.*
+
+| Channel | Final LTV Proxy (Rev/Conv) | Trend |
+|---|---|---|
+| **LinkedIn** | **$300.00** | Highest value, steady growth |
+| Google Ads | $143.01 | Solid mid-tier performance |
+| Email | $123.60 | Efficient but lower per-user value |
+| Meta | $112.83 | Lowest — weakest per-conversion return |
+
+LinkedIn's curve sits well above all peers, indicating that while it drives fewer conversions, each conversion delivers significantly more revenue — a classic **quality over quantity** signal.
+
+---
+
+## Channel Volume vs. Value Comparison (chart_3)
+
+**chart_3** — *Dual-axis bar chart: total conversions (volume) vs. revenue per conversion (LTV proxy) by channel.*
+
+| Channel | Total Conversions | Revenue/Conversion | Total ROAS | CAC |
+|---|---|---|---|---|
+| Email | 2,000 | $123.60 | **23.1×** | **$5.35** |
+| Meta | 2,065 | $112.83 | 4.4× | $25.67 |
+| Google Ads | 1,725 | $143.01 | 3.4× | $41.74 |
+| LinkedIn | 100 | **$300.00** | 1.6× | $185.00 |
+
+**The volume-value tradeoff is stark:**
+- **Email** generates 2,000 conversions with a 23× ROAS and $5.35 CAC — the most capital-efficient channel by far.
+- **Meta** drives the most conversions (2,065) but at the lowest per-conversion value ($112.83).
+- **LinkedIn** has just 100 conversions but at $300 each — 2.7× the value of Meta's customers.
+- **Google Ads** is a solid mid-tier performer across all metrics.
+
+---
+
+## Top &amp; Bottom Performing Cohorts
+
+### 🏆 Top Performers
+- **Highest LTV (Revenue/Conversion):** LinkedIn — $300/conversion
+- **Highest ROAS:** Email — 23.1× return on spend
+- **Lowest CAC:** Email — $5.35 per conversion
+
+### ⚠️ Lowest Performers
+- **Lowest LTV:** Meta — $112.83/conversion
+- **Lowest ROAS:** LinkedIn — 1.6× (volume is low, driving CAC up)
+
+---
+
+## Recommended Actions
+
+### 1. 📈 Double Down on Email — Your Efficiency Engine
+Email has a 23× ROAS and a $5.35 CAC. Every dollar invested here returns 23× in revenue. **Increase email marketing investment** — optimize list segmentation, personalization, and send frequency to scale conversions without sacrificing per-conversion quality.
+
+### 2. 🎯 Investigate LinkedIn for High-Value Customer Segments
+LinkedIn customers generate $300/conversion — more than 2.5× Meta and Google Ads. Despite a poor ROAS (conversions are expensive), LinkedIn may be capturing **enterprise or high-LTV buyers**. Consider: (a) whether LinkedIn customers have higher downstream retention/repeat purchase rates, and (b) whether budget from Meta could shift to LinkedIn to improve cohort quality.
+
+### 3. ⚙️ Audit Meta Spend for Efficiency Gaps
+Meta drives volume (2,065 conversions) but at the lowest per-conversion value. Before cutting, **audit audience targeting and ad creative** — Meta's reach may be attracting low-intent users. A/B test narrower audience segments to see if per-conversion quality can improve. If LTV remains flat, shift budget toward Email or Google Ads.
+</pre></details>
+      </div>
+
+      <div style="border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:16px;background:white;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+              <span style="background:#ecfdf5;color:#059669;font-weight:700;font-size:12px;padding:2px 10px;border-radius:999px;letter-spacing:0.05em;">PASS</span>
+              <h3 style="margin:0;font-size:16px;font-weight:600;color:#111827;">cost-per-conversion</h3>
+            </div>
+            <p style="margin:4px 0 0;color:#6b7280;font-size:14px;">"Show cost per conversion by campaign as a bar chart, highlight the worst performers"</p>
+          </div>
+          <span style="color:#9ca3af;font-size:13px;white-space:nowrap;">79.7s</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;">
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Quality Score</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:80px;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
+          <div style="width:100%;height:100%;background:#059669;border-radius:4px;"></div>
+        </div>
+        <span style="font-weight:600;">5/5</span>
+      </div>
+          </div>
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Charts</div>
+            <div style="font-weight:600;color:#111827;">1 generated</div>
+          </div>
+          <div style="background:#f9fafb;padding:12px;border-radius:8px;">
+            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Report</div>
+            <div style="font-weight:600;color:#059669;">Yes</div>
+          </div>
+        </div>
+
+        <div style="background:#fffbeb;border-left:3px solid #d97706;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#92400e;">
+          <strong>Judge:</strong> The agent delivers an excellent, complete response. The tool sequence is logical (plan → execute → report). The Python code correctly computes cost per conversion (spend/conversions), uses real column names ('spend', 'conversions', 'campaign'), sorts properly for a horizontal bar chart, and applies a clear 1.5× median threshold to highlight worst performers in red vs. blue. The chart design is appropriate (horizontal bars, value labels, threshold dashed line, legend). The report goes well beyond restating numbers: it identifies Sponsored Content and Generic Search as worst performers with specific multipliers (5.2× and 2.4× median), quantifies the combined spend inefficiency ($36,500 for only 310 conversions), and provides three actionable, specific recommendations (pause/restructure, tighten bids with negative keywords, reinvest in Newsletter/Win-back). The summary table with emoji flags, executive summary with median/average context, and the quick-takeaway text response all add meaningful value. Minor note: the findings JSON output is a nice bonus for downstream use. No fabricated columns or hallucinated data patterns are evident.
+        </div>
+
+        <div style="font-size:13px;color:#6b7280;margin-bottom:8px;">
+          <strong>Rubric:</strong> The agent should produce a bar chart showing cost per conversion (spend/conversions) per campaign with worst performers visually highlighted. The report should identify which campaigns to optimize or cut.
+        </div>
+        <div style="font-size:13px;color:#6b7280;margin-bottom:12px;">
+          <strong>Tools:</strong> <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">planAnalysis</code> → <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">executeAnalysis</code> → <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">composeReport</code>
+        </div>
+
+        <details><summary style="cursor:pointer;color:#6366f1;font-size:13px;">Generated Python (71 lines)</summary>
+           <pre style="background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;margin-top:8px;">
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import json
+import numpy as np
+
+# Load and aggregate
+df = pd.read_csv('data.csv')
+
+# Group by campaign
+camp = df.groupby('campaign').agg(total_spend=('spend','sum'), total_conversions=('conversions','sum')).reset_index()
+camp['cost_per_conversion'] = camp['total_spend'] / camp['total_conversions']
+
+# Sort worst → best (descending CPC)
+camp = camp.sort_values('cost_per_conversion', ascending=True)  # ascending for horizontal bar (worst at top)
+
+# Threshold: 1.5x median
+median_cpc = camp['cost_per_conversion'].median()
+threshold = 1.5 * median_cpc
+camp['is_worst'] = camp['cost_per_conversion'] &gt;= threshold
+
+colors = ['#e63946' if w else '#457b9d' for w in camp['is_worst']]
+
+# --- Chart ---
+fig, ax = plt.subplots(figsize=(11, max(5, len(camp) * 0.55)))
+
+bars = ax.barh(camp['campaign'], camp['cost_per_conversion'], color=colors, edgecolor='white', height=0.65)
+
+# Value labels
+for bar, val in zip(bars, camp['cost_per_conversion']):
+    ax.text(bar.get_width() + max(camp['cost_per_conversion']) * 0.01,
+            bar.get_y() + bar.get_height() / 2,
+            f'${val:,.2f}', va='center', ha='left', fontsize=9.5, fontweight='bold')
+
+# Threshold line
+ax.axvline(threshold, color='#e63946', linestyle='--', linewidth=1.5, alpha=0.7, label=f'Worst-performer threshold (${threshold:,.2f})')
+
+ax.set_xlabel('Cost per Conversion ($)', fontsize=11)
+ax.set_title('Cost per Conversion by Campaign\n(Red = Worst Performers ≥ 1.5× Median)', fontsize=13, fontweight='bold', pad=14)
+ax.set_xlim(0, max(camp['cost_per_conversion']) * 1.18)
+
+# Legend
+red_patch = mpatches.Patch(color='#e63946', label='Worst performers')
+blue_patch = mpatches.Patch(color='#457b9d', label='Efficient campaigns')
+ax.legend(handles=[red_patch, blue_patch], loc='lower right', fontsize=9.5)
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.tick_params(axis='y', labelsize=10)
+
+plt.tight_layout()
+plt.savefig('chart_1.png', dpi=150, bbox_inches='tight')
+plt.close()
+
+# --- Findings JSON ---
+worst = camp[camp['is_worst']].sort_values('cost_per_conversion', ascending=False)
+best  = camp[~camp['is_worst']].sort_values('cost_per_conversion')
+
+findings = {
+    &quot;median_cpc&quot;: round(median_cpc, 2),
+    &quot;threshold&quot;: round(threshold, 2),
+    &quot;overall_avg_cpc&quot;: round(camp['cost_per_conversion'].mean(), 2),
+    &quot;worst_performers&quot;: worst[['campaign','cost_per_conversion','total_spend','total_conversions']].rename(columns={'cost_per_conversion':'cpc'}).assign(cpc=lambda x: x['cpc'].round(2), total_spend=lambda x: x['total_spend'].round(2)).to_dict(orient='records'),
+    &quot;best_performers&quot;: best[['campaign','cost_per_conversion','total_spend','total_conversions']].rename(columns={'cost_per_conversion':'cpc'}).assign(cpc=lambda x: x['cpc'].round(2), total_spend=lambda x: x['total_spend'].round(2)).to_dict(orient='records'),
+    &quot;num_campaigns&quot;: int(len(camp)),
+    &quot;num_worst&quot;: int(camp['is_worst'].sum()),
+}
+
+print(json.dumps(findings))
+</pre></details>
+        <details><summary style="cursor:pointer;color:#6366f1;font-size:13px;">Report (2722 chars)</summary>
+           <pre style="background:#f8fafc;color:#334155;padding:12px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;margin-top:8px;white-space:pre-wrap;">
+## Cost Per Conversion by Campaign
+
+### Executive Summary
+Across **7 campaigns**, the average cost per conversion is **$57.42**, with a median of **$35.64**. Two campaigns — **Sponsored Content** and **Generic Search** — are flagged as worst performers, each exceeding 1.5× the median threshold of **$53.47**. Together they represent a significant efficiency gap compared to top-performing campaigns like Newsletter and Win-back.
+
+---
+
+### Chart
+
+**chart_1** — Horizontal bar chart of cost per conversion by campaign, sorted from highest (worst) to lowest (best). Red bars indicate worst performers (≥ 1.5× the median CPC); blue bars are efficient campaigns. The dashed red line marks the worst-performer threshold at $53.47.
+
+---
+
+### Cost Per Conversion by Campaign
+
+| Campaign | Total Spend | Conversions | Cost Per Conversion |
+|---|---|---|---|
+| 🔴 Sponsored Content | $18,500 | 100 | **$185.00** |
+| 🔴 Generic Search | $18,000 | 210 | **$85.71** |
+| Lookalike | $15,000 | 290 | $51.72 |
+| Brand Search | $54,000 | 1,515 | $35.64 |
+| Retargeting | $38,000 | 1,775 | $21.41 |
+| Win-back | $1,500 | 85 | $17.65 |
+| Newsletter | $9,200 | 1,915 | **$4.80** |
+
+---
+
+### Worst Performers Analysis
+
+**Sponsored Content** is the single most inefficient campaign at **$185.00 per conversion** — nearly **5.2× the median** and **38× worse than the Newsletter campaign**. Despite $18,500 in spend, it generated only 100 conversions.
+
+**Generic Search** comes in at **$85.71 per conversion** — 2.4× the median. With $18,000 in spend and 210 conversions, there's clear room to improve targeting or reduce bids.
+
+Combined, these two campaigns consumed **$36,500 in spend** (~19% of inferred total) but delivered only **310 conversions** — a poor return compared to any other campaign in the portfolio.
+
+---
+
+### Recommended Actions
+
+1. **Pause or restructure Sponsored Content.** At $185/conversion, this campaign is dramatically underperforming. Audit ad creative, audience targeting, and landing page experience. Consider reallocating budget to Newsletter or Retargeting, which deliver conversions at a fraction of the cost.
+
+2. **Tighten Generic Search bids and keyword targeting.** A CPC of $85.71 suggests either broad match keywords are attracting unqualified traffic or bids are too aggressive. Shift spend toward Brand Search ($35.64/conversion) and add negative keywords to Generic Search to filter low-intent queries.
+
+3. **Double down on Newsletter and Win-back.** At $4.80 and $17.65 per conversion respectively, these are your highest-efficiency channels. Increasing investment here — or using them as models for improving other campaigns — could meaningfully reduce the portfolio-wide average cost per conversion.
+</pre></details>
+      </div>
+
+    <div style="text-align:center;color:#9ca3af;font-size:12px;margin-top:32px;padding-top:16px;border-top:1px solid #e5e7eb;">
+      Generated by <code>npm run eval</code> — Marketing Analytics Agent
+    </div>
+  </div>
+</body>
+</html>
