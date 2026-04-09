@@ -289,8 +289,8 @@ export default function Home() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask about your marketing data..."
-                className="flex-1 text-sm px-4 py-3 border border-gray-200 rounded-xl bg-white
-                           focus:outline-none focus:ring-2 focus:ring-black"
+                className="flex-1 text-sm text-gray-900 px-4 py-3 border border-gray-200 rounded-xl bg-white
+                           placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
               />
               <button
                 type="submit"
@@ -405,8 +405,8 @@ export default function Home() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask about your marketing data..."
-                  className="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-lg
-                             focus:outline-none focus:ring-2 focus:ring-black"
+                  className="flex-1 text-sm text-gray-900 px-3 py-2 border border-gray-200 rounded-lg bg-white
+                             placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
                 />
                 <button
                   type="submit"
@@ -454,7 +454,7 @@ function ModelSelect({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white
+        className="text-xs text-gray-900 border border-gray-200 rounded-lg px-2 py-1.5 bg-white
                    focus:outline-none focus:ring-2 focus:ring-black disabled:opacity-50"
       >
         {MODELS.map((m) => (
