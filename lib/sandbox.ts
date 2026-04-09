@@ -17,6 +17,7 @@ export interface AnalysisResult {
 export async function executeAnalysis(
   csvText: string,
   pythonCode: string,
+  abortSignal?: AbortSignal,
 ): Promise<AnalysisResult> {
   const start = Date.now();
 
@@ -25,6 +26,10 @@ export async function executeAnalysis(
     runtime: "python3.13",
     timeout: 3 * 60 * 1000,
   });
+
+  // Stop the sandbox immediately if the request is cancelled
+  const onAbort = () => { sandbox.stop().catch(() => {}); };
+  abortSignal?.addEventListener("abort", onAbort);
 
   try {
     await sandbox.writeFiles([{ path: "data.csv", content: csvText }]);
@@ -131,6 +136,7 @@ export async function executeAnalysis(
       durationMs: Date.now() - start,
     };
   } finally {
+    abortSignal?.removeEventListener("abort", onAbort);
     await sandbox.stop();
   }
 }
@@ -149,4 +155,3 @@ df = pd.read_csv('data.csv')
 ${code}
 `;
 }
-

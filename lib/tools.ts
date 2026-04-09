@@ -9,15 +9,13 @@ import { executeAnalysis } from "@/lib/sandbox";
  * @param schemaDescription - Human-readable schema description
  * @param model - Code generation model string for metadata tracking
  * @param options.requireApproval - Whether planAnalysis requires HITL approval (true in prod, false in eval)
- * @param options.analyzeModel - Model used for plan generation (defaults to model)
  */
 export function createTools(
   csvText: string,
   schemaDescription: string,
   model: string,
-  options: { requireApproval?: boolean; analyzeModel?: string } = {},
+  options: { requireApproval?: boolean } = {},
 ) {
-  const analyzeModel = options.analyzeModel ?? model;
   return {
     planAnalysis: tool({
       description:
@@ -44,7 +42,6 @@ export function createTools(
         return {
           plan,
           schemaDescription,
-          _meta: { model: analyzeModel },
         };
       },
     }),
@@ -65,9 +62,9 @@ export function createTools(
           "One sentence describing what this analysis computes",
         ),
       }),
-      execute: async ({ code }) => {
+      execute: async ({ code }, { abortSignal }) => {
         console.log("[executeAnalysis] code length:", code?.length, "model:", model);
-        const result = await executeAnalysis(csvText, code);
+        const result = await executeAnalysis(csvText, code, abortSignal);
         if (!result.success) {
           console.log("[executeAnalysis] FAILED:", result.error);
           return {

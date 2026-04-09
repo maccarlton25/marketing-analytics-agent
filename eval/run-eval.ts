@@ -36,6 +36,7 @@ async function runCase(testCase: EvalCase): Promise<EvalResult> {
     requireApproval: false,
   });
 
+
   // Run the full agent pipeline — same code path as production
   const result = await generateText({
     model: EVAL_MODEL,
@@ -319,36 +320,35 @@ async function main() {
   const totalStart = Date.now();
   console.log(`Running ${casesToRun.length}/${TEST_CASES.length} eval cases...\n`);
 
-  const results: EvalResult[] = [];
+  // Run all cases in parallel — each is fully independent
+  const settled = await Promise.allSettled(casesToRun.map(runCase));
 
-  for (const testCase of casesToRun) {
-    console.log(`[${testCase.id}] "${testCase.prompt}"`);
-    try {
-      const result = await runCase(testCase);
-      results.push(result);
-
-      const status = result.passed ? "PASS" : "FAIL";
+  const results: EvalResult[] = settled.map((s, i) => {
+    const tc = casesToRun[i];
+    if (s.status === "fulfilled") {
+      const r = s.value;
+      const status = r.passed ? "PASS" : "FAIL";
       console.log(
-        `  ${status} | score: ${result.score}/5 | charts: ${result.chartCount} | report: ${result.hasReport} | ${(result.durationMs / 1000).toFixed(1)}s`,
+        `[${r.id}] ${status} | score: ${r.score}/5 | charts: ${r.chartCount} | report: ${r.hasReport} | ${(r.durationMs / 1000).toFixed(1)}s`,
       );
-      console.log(`  Judge: ${result.judgeReason}\n`);
-    } catch (err) {
-      console.error(`  ERROR: ${err}\n`);
-      results.push({
-        id: testCase.id,
-        prompt: testCase.prompt,
-        rubric: testCase.rubric,
-        passed: false,
-        score: 0,
-        judgeReason: `Eval crashed: ${err}`,
-        chartCount: 0,
-        hasReport: false,
-        toolSequence: [],
-        error: String(err),
-        durationMs: Date.now() - totalStart,
-      });
+      console.log(`  Judge: ${r.judgeReason}`);
+      return r;
     }
-  }
+    console.error(`[${tc.id}] ERROR: ${s.reason}`);
+    return {
+      id: tc.id,
+      prompt: tc.prompt,
+      rubric: tc.rubric,
+      passed: false,
+      score: 0,
+      judgeReason: `Eval crashed: ${s.reason}`,
+      chartCount: 0,
+      hasReport: false,
+      toolSequence: [],
+      error: String(s.reason),
+      durationMs: 0,
+    };
+  });
 
   const totalDuration = Date.now() - totalStart;
   const passed = results.filter((r) => r.passed).length;

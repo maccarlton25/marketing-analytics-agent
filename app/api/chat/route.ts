@@ -6,6 +6,7 @@ import {
 } from "ai";
 import { createTools } from "@/lib/tools";
 import { SYSTEM_PROMPT } from "@/lib/prompts";
+import { resolveModel } from "@/lib/models";
 
 // Vercel Fluid compute — allow up to 3 minutes for multi-step analysis
 export const maxDuration = 180;
@@ -33,8 +34,9 @@ export async function POST(req: Request) {
     codeGenModel?: string;
   };
 
-  const analyzeModel = clientAnalyzeModel || MODEL_CONFIG.analyze;
-  const codeGenModel = clientCodeGenModel || MODEL_CONFIG.codeGen;
+  // Validate model strings against the allowlist — reject unknown values to defaults
+  const analyzeModel = resolveModel(clientAnalyzeModel, MODEL_CONFIG.analyze);
+  const codeGenModel = resolveModel(clientCodeGenModel, MODEL_CONFIG.codeGen);
 
   console.log("[chat] POST received", {
     messageCount: messages?.length,
@@ -72,7 +74,6 @@ function createStreamResult(
 ) {
   const tools = createTools(csvText, schemaDescription, model, {
     requireApproval: true,
-    analyzeModel,
   });
 
   return streamText({
@@ -80,8 +81,25 @@ function createStreamResult(
     system: SYSTEM_PROMPT,
     messages,
     tools,
-    // 6 steps allows: plan → execute → compose + up to 3 retries on sandbox errors
-    stopWhen: stepCountIs(6),
+    // Budget: plan(1) + execute(1) + up to 4 retries(4) + compose(1) = 7 steps, +1 buffer
+    stopWhen: stepCountIs(8),
+    // Switch to the cheaper analyze model for the planning step
+    prepareStep({ steps }) {
+      const lastTool = steps.at(-1)?.toolCalls?.at(-1);
+      if (!lastTool || lastTool.toolName === "planAnalysis") {
+        return { model: analyzeModel };
+      }
+      return { model };
+    },
+    onStepFinish({ stepType, toolCalls, finishReason, usage }) {
+      console.log("[step]", {
+        stepType,
+        finishReason,
+        tools: toolCalls.map((tc) => tc.toolName),
+        inputTokens: usage.promptTokens,
+        outputTokens: usage.completionTokens,
+      });
+    },
   });
 }
 

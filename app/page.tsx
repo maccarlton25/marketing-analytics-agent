@@ -5,14 +5,7 @@ import { DefaultChatTransport } from "ai";
 import FileUpload from "@/components/FileUpload";
 import ReportPanel from "@/components/ReportPanel";
 import MessagePart from "@/components/MessagePart";
-
-const MODELS = [
-  { id: "anthropic/claude-sonnet-4.6", label: "Sonnet 4.6", tier: "Balanced" },
-  { id: "anthropic/claude-haiku-4-5", label: "Haiku 4.5", tier: "Fast" },
-  { id: "openai/gpt-5.4", label: "GPT-5.4", tier: "Balanced" },
-  { id: "openai/gpt-5.4-nano", label: "GPT-5.4 Nano", tier: "Fast" },
-  { id: "google/gemini-3-flash", label: "Gemini 3 Flash", tier: "Fast" },
-];
+import { MODELS } from "@/lib/models";
 
 const SUGGESTED_PROMPTS = [
   { label: "Channel ROAS", prompt: "Which channels have the best ROAS? Rank them and identify underperformers." },
