@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -27,6 +27,7 @@ type Segment =
 
 export default function ReportPanel({ markdown, charts, isLoading }: Props) {
   const [fullscreenChart, setFullscreenChart] = useState<Chart | null>(null);
+  const reportRef = useRef<HTMLDivElement>(null);
 
   const chartMap = useMemo(() => {
     const map = new Map<string, Chart>();
@@ -80,6 +81,31 @@ export default function ReportPanel({ markdown, charts, isLoading }: Props) {
     setFullscreenChart(chart);
   }, []);
 
+  const downloadPdf = useCallback(() => {
+    if (!reportRef.current) return;
+    const win = window.open("", "_blank");
+    if (!win) return;
+
+    // Clone the report content and embed chart images directly
+    const clone = reportRef.current.cloneNode(true) as HTMLElement;
+
+    // Strip Tailwind classes and download bar from the clone
+    clone.querySelectorAll("[class]").forEach((el) => el.removeAttribute("class"));
+
+    win.document.write(`<!DOCTYPE html><html><head><title>Marketing Analytics Report</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #111; line-height: 1.6; font-size: 14px; }
+        img { max-width: 100%; height: auto; margin: 16px 0; }
+        table { border-collapse: collapse; width: 100%; margin: 12px 0; } th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        h1 { font-size: 22px; } h2 { font-size: 18px; margin-top: 1.5em; } h3 { font-size: 15px; }
+        p { margin: 8px 0; }
+        @media print { body { margin: 20px; } img { break-inside: avoid; } }
+      </style></head><body>${clone.innerHTML}</body></html>`);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 250);
+  }, []);
+
   if (isLoading && !markdown && charts.length === 0) {
     return (
       <div className="text-center text-gray-400 text-sm p-8">
@@ -103,7 +129,21 @@ export default function ReportPanel({ markdown, charts, isLoading }: Props) {
 
   return (
     <>
-      <div className="p-6 overflow-y-auto h-full">
+      <div className="flex items-center justify-between px-6 py-3 border-b border-gray-100">
+        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Report</span>
+        <button
+          onClick={downloadPdf}
+          className="flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-black
+                     bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors"
+        >
+          <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
+            <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
+          </svg>
+          Export PDF
+        </button>
+      </div>
+      <div ref={reportRef} className="p-6 overflow-y-auto h-full">
         {segments.map((seg, i) =>
           seg.type === "markdown" ? (
             <div key={i} className="prose prose-sm prose-gray max-w-none">

@@ -9,8 +9,9 @@ import MessagePart from "@/components/MessagePart";
 const MODELS = [
   { id: "anthropic/claude-sonnet-4.6", label: "Sonnet 4.6", tier: "Balanced" },
   { id: "anthropic/claude-haiku-4-5", label: "Haiku 4.5", tier: "Fast" },
-  { id: "openai/gpt-4o", label: "GPT-4o", tier: "Balanced" },
-  { id: "openai/gpt-4o-mini", label: "GPT-4o Mini", tier: "Fast" },
+  { id: "openai/gpt-5.4", label: "GPT-5.4", tier: "Balanced" },
+  { id: "openai/gpt-5.4-nano", label: "GPT-5.4 Nano", tier: "Fast" },
+  { id: "google/gemini-3-flash", label: "Gemini 3 Flash", tier: "Fast" },
 ];
 
 const SUGGESTED_PROMPTS = [
@@ -79,7 +80,7 @@ export default function Home() {
     [],
   );
 
-  const { messages, sendMessage, status, error, clearError, addToolApprovalResponse } = useChat({
+  const { messages, setMessages, sendMessage, status, error, clearError, addToolApprovalResponse } = useChat({
     transport,
     sendAutomaticallyWhen: ({ messages: msgs }) => {
       const last = msgs[msgs.length - 1];
@@ -213,13 +214,13 @@ export default function Home() {
             {csvText && (
               <>
                 <ModelSelect
-                  label="Analyze"
+                  label="Planner"
                   value={analyzeModel}
                   onChange={setSchemaModel}
                   disabled={isLoading}
                 />
                 <ModelSelect
-                  label="Code Gen"
+                  label="Model"
                   value={codeGenModel}
                   onChange={setCodeGenModel}
                   disabled={isLoading}
@@ -303,11 +304,13 @@ export default function Home() {
             </form>
 
             {/* Dataset info + upload */}
-            <div className="flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-4">
-              <p>
-                <span className="text-gray-500 font-medium">{datasetName}</span>{" "}
-                <span className="text-gray-400">{schemaDescription?.split("\n")[0] ?? ""}</span>
-              </p>
+            <div className="border border-gray-200 rounded-xl overflow-hidden mb-4">
+              <SchemaPreview
+                schemaDescription={schemaDescription}
+                datasetName={datasetName}
+              />
+            </div>
+            <div className="flex items-center justify-end text-xs text-gray-400">
               <label className="cursor-pointer hover:text-gray-600 transition-colors">
                 <span className="underline">Upload different CSV</span>
                 <input
@@ -340,6 +343,15 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-6 h-[calc(100vh-160px)]">
             {/* Left: Chat */}
             <div className="flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100">
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Chat</span>
+                <button
+                  onClick={() => setMessages([])}
+                  className="text-xs text-gray-400 hover:text-gray-700 transition-colors px-2 py-1 rounded hover:bg-gray-50"
+                >
+                  New chat
+                </button>
+              </div>
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {messages.map((m) =>
                   m.role === "user" ? (
@@ -396,7 +408,11 @@ export default function Home() {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Input */}
+              {/* Schema + Input */}
+              <SchemaPreview
+                schemaDescription={schemaDescription}
+                datasetName={datasetName}
+              />
               <form
                 onSubmit={handleSubmit}
                 className="border-t border-gray-100 p-3 flex gap-2"
@@ -431,6 +447,51 @@ export default function Home() {
         )}
       </div>
     </main>
+  );
+}
+
+function SchemaPreview({
+  schemaDescription,
+  datasetName,
+}: {
+  schemaDescription: string | null;
+  datasetName: string;
+}) {
+  const [open, setOpen] = useState(false);
+  if (!schemaDescription) return null;
+
+  const lines = schemaDescription.split("\n");
+  const summary = lines[0]; // e.g. "21 rows, 9 columns"
+  const columns = lines.slice(1); // e.g. "  - month (string)"
+
+  return (
+    <div className="border-t border-gray-100">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-3 py-1.5 text-xs text-gray-400
+                   hover:text-gray-600 hover:bg-gray-50 transition-colors"
+      >
+        <span>
+          <span className="font-medium text-gray-500">{datasetName}</span>
+          {" — "}{summary}
+        </span>
+        <span>{open ? "▾" : "▸"}</span>
+      </button>
+      {open && (
+        <div className="px-3 pb-2 grid grid-cols-2 gap-x-4 gap-y-0.5">
+          {columns.map((col, i) => {
+            const match = col.match(/- (.+) \((.+)\)/);
+            if (!match) return null;
+            return (
+              <div key={i} className="flex items-center gap-1.5 text-[11px]">
+                <span className="font-mono text-gray-700">{match[1]}</span>
+                <span className="text-gray-300">{match[2]}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
 

@@ -31,7 +31,7 @@ The key rule: only call planAnalysis when starting a genuinely new analysis. If 
 - df is pre-loaded from data.csv
 - matplotlib.use('Agg') is already set in preamble
 - Save charts as chart_1.png, chart_2.png etc. in the current directory
-- Print findings as a single JSON object to stdout at the end: print(json.dumps(findings))
+- Print findings as a single JSON object to stdout at the end: print(json.dumps(findings, default=str)) — always use default=str to handle numpy/pandas types (int64, float64, etc.)
 - Install packages with pip if needed — pandas, scipy, statsmodels, scikit-learn are all fair game
 - Do not use prophet — too slow to install
 - Keep charts clean and labeled — title, axis labels, legend where needed

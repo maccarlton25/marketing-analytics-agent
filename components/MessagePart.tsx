@@ -37,10 +37,19 @@ function TextPart({ text }: { text: string }) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function ToolPart({ part, onApproval }: { part: any; onApproval?: (id: string, approved: boolean) => void }) {
+function ToolPart({
+  part,
+  onApproval,
+}: {
+  part: any;
+  onApproval?: (id: string, approved: boolean) => void;
+}) {
   // Static tools have type "tool-NAME", dynamic tools have toolName property
-  const toolName: string = part.toolName
-    ?? (typeof part.type === "string" && part.type.startsWith("tool-") ? part.type.slice(5) : "unknown");
+  const toolName: string =
+    part.toolName ??
+    (typeof part.type === "string" && part.type.startsWith("tool-")
+      ? part.type.slice(5)
+      : "unknown");
 
   if (toolName === "planAnalysis") {
     return <PlanAnalysisPart part={part} onApproval={onApproval} />;
@@ -58,31 +67,47 @@ function ToolPart({ part, onApproval }: { part: any; onApproval?: (id: string, a
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function PlanAnalysisPart({ part, onApproval }: { part: any; onApproval?: (id: string, approved: boolean) => void }) {
+function PlanAnalysisPart({
+  part,
+  onApproval,
+}: {
+  part: any;
+  onApproval?: (id: string, approved: boolean) => void;
+}) {
   const state: string = part.state;
-  const input = part.input as {
-    analysisType?: string;
-    computations?: string[];
-    charts?: { id: string; description: string }[];
-    reportOutline?: string[];
-  } | undefined;
+  const input = part.input as
+    | {
+        analysisType?: string;
+        computations?: string[];
+        charts?: { id: string; description: string }[];
+        reportOutline?: string[];
+      }
+    | undefined;
 
   // Render the plan details (shared between approval-requested and output-available)
   const planDetails = input && (
     <div className="text-xs text-gray-500 space-y-1">
       {input.analysisType && (
-        <p><span className="font-medium text-gray-600">Type:</span> {input.analysisType}</p>
+        <p>
+          <span className="font-medium text-gray-600">Type:</span>{" "}
+          {input.analysisType}
+        </p>
       )}
       {input.computations && input.computations.length > 0 && (
         <div>
           <span className="font-medium text-gray-600">Computations:</span>
           <ul className="list-disc list-inside ml-2 mt-0.5">
-            {input.computations.map((c, i) => <li key={i}>{c}</li>)}
+            {input.computations.map((c, i) => (
+              <li key={i}>{c}</li>
+            ))}
           </ul>
         </div>
       )}
       {input.charts && input.charts.length > 0 && (
-        <p><span className="font-medium text-gray-600">Charts:</span> {input.charts.map(c => c.description).join(", ")}</p>
+        <p>
+          <span className="font-medium text-gray-600">Charts:</span>{" "}
+          {input.charts.map((c) => c.description).join(", ")}
+        </p>
       )}
     </div>
   );
@@ -135,7 +160,7 @@ function PlanAnalysisPart({ part, onApproval }: { part: any; onApproval?: (id: s
         <div className="border border-gray-200 rounded-lg p-3 my-2 bg-gray-50">
           <div className="flex items-center gap-2 text-xs font-medium text-gray-500">
             <XIcon />
-            <span>New analysis denied — refining existing report</span>
+            <span>New analysis denied, tell me what to do differently. </span>
           </div>
         </div>
       );
@@ -176,7 +201,9 @@ function PlanAnalysisPart({ part, onApproval }: { part: any; onApproval?: (id: s
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ExecuteAnalysisPart({ part }: { part: any }) {
   const state: string = part.state;
-  const input = part.input as { code?: string; analysisDescription?: string } | undefined;
+  const input = part.input as
+    | { code?: string; analysisDescription?: string }
+    | undefined;
 
   if (state === "input-streaming") {
     return (
@@ -185,9 +212,7 @@ function ExecuteAnalysisPart({ part }: { part: any }) {
           <Spinner />
           <span>Writing analysis code...</span>
         </div>
-        {input?.code && (
-          <CodeBlock code={input.code} label="Generating..." />
-        )}
+        {input?.code && <CodeBlock code={input.code} label="Generating..." />}
       </div>
     );
   }
@@ -199,21 +224,21 @@ function ExecuteAnalysisPart({ part }: { part: any }) {
           <Spinner />
           <span>Running analysis in sandbox...</span>
         </div>
-        {input?.code && (
-          <CodeBlock code={input.code} label="Executing" />
-        )}
+        {input?.code && <CodeBlock code={input.code} label="Executing" />}
       </div>
     );
   }
 
   if (state === "output-available") {
-    const output = part.output as {
-      success?: boolean;
-      charts?: { id: string; base64: string }[];
-      error?: string;
-      hint?: string;
-      _meta?: { model?: string; durationMs?: number };
-    } | undefined;
+    const output = part.output as
+      | {
+          success?: boolean;
+          charts?: { id: string; base64: string }[];
+          error?: string;
+          hint?: string;
+          _meta?: { model?: string; durationMs?: number };
+        }
+      | undefined;
 
     const meta = output?._meta;
     const chartCount = output?.charts?.length ?? 0;
@@ -254,7 +279,9 @@ function ExecuteAnalysisPart({ part }: { part: any }) {
   if (state === "output-error") {
     return (
       <div className="my-2">
-        {input?.code && <CodeBlock code={input.code} label="Failed" success={false} />}
+        {input?.code && (
+          <CodeBlock code={input.code} label="Failed" success={false} />
+        )}
         <ErrorBadge text={part.errorText ?? "Analysis execution failed"} />
       </div>
     );
@@ -315,7 +342,9 @@ function CodeBlock({
         : "text-gray-500 bg-gray-50 border-gray-200";
 
   return (
-    <div className={`border rounded-lg overflow-hidden ${success === false ? "border-red-200" : "border-gray-200"}`}>
+    <div
+      className={`border rounded-lg overflow-hidden ${success === false ? "border-red-200" : "border-gray-200"}`}
+    >
       <button
         onClick={() => setExpanded(!expanded)}
         className={`w-full flex items-center justify-between px-3 py-1.5 text-xs font-mono ${statusColor} hover:opacity-80 transition-opacity`}
@@ -358,33 +387,72 @@ function ErrorBadge({ text }: { text: string }) {
 
 function Spinner() {
   return (
-    <svg className="animate-spin h-3 w-3 text-gray-400" viewBox="0 0 24 24" fill="none">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    <svg
+      className="animate-spin h-3 w-3 text-gray-400"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+      />
     </svg>
   );
 }
 
 function PauseIcon() {
   return (
-    <svg className="h-3 w-3 text-amber-600" viewBox="0 0 20 20" fill="currentColor">
-      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+    <svg
+      className="h-3 w-3 text-amber-600"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fillRule="evenodd"
+        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
+        clipRule="evenodd"
+      />
     </svg>
   );
 }
 
 function CheckIcon() {
   return (
-    <svg className="h-3 w-3 text-green-600" viewBox="0 0 20 20" fill="currentColor">
-      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+    <svg
+      className="h-3 w-3 text-green-600"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fillRule="evenodd"
+        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+        clipRule="evenodd"
+      />
     </svg>
   );
 }
 
 function XIcon() {
   return (
-    <svg className="h-3 w-3 text-red-600" viewBox="0 0 20 20" fill="currentColor">
-      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+    <svg
+      className="h-3 w-3 text-red-600"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fillRule="evenodd"
+        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+        clipRule="evenodd"
+      />
     </svg>
   );
 }

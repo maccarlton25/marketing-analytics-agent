@@ -14,7 +14,7 @@ export const maxDuration = 180;
 const MODEL_CONFIG = {
   analyze: "anthropic/claude-haiku-4-5",      // Fast/cheap for plan generation
   codeGen: "anthropic/claude-sonnet-4.6",     // Capable for Python code generation
-  codeGenFallback: "openai/gpt-4o",           // Fallback if primary model errors
+  codeGenFallback: "openai/gpt-5.4",           // Fallback if primary model errors
 } as const;
 
 export async function POST(req: Request) {
@@ -43,7 +43,10 @@ export async function POST(req: Request) {
     codeGenModel,
   });
 
-  const modelMessages = await convertToModelMessages(messages);
+  // Strip denied tool-call parts so convertToModelMessages doesn't produce
+  // orphaned tool_use blocks (Anthropic requires every tool_use to have a tool_result).
+  const cleanedMessages = stripDeniedToolParts(messages);
+  const modelMessages = await convertToModelMessages(cleanedMessages);
 
   try {
     const result = createStreamResult(
@@ -80,4 +83,29 @@ function createStreamResult(
     // 6 steps allows: plan → execute → compose + up to 3 retries on sandbox errors
     stopWhen: stepCountIs(6),
   });
+}
+
+/**
+ * Remove assistant tool-call parts that were denied via HITL approval.
+ * Without this, convertToModelMessages produces tool_use blocks with no
+ * matching tool_result, which Anthropic rejects with a 400.
+ */
+function stripDeniedToolParts(messages: UIMessage[]): UIMessage[] {
+  return messages.map((msg) => {
+    if (msg.role !== "assistant") return msg;
+
+    const filtered = msg.parts.filter((part) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const p = part as any;
+      // Keep everything that isn't a denied tool call (v6 uses tool-<name> part types)
+      const isToolPart = typeof p.type === "string" && p.type.startsWith("tool-");
+      if (isToolPart && p.approval?.approved === false) return false;
+      return true;
+    });
+
+    // If all parts were stripped, drop the message entirely
+    if (filtered.length === 0) return null;
+
+    return { ...msg, parts: filtered };
+  }).filter((msg): msg is UIMessage => msg !== null);
 }
