@@ -1,0 +1,83 @@
+import {
+  streamText,
+  convertToModelMessages,
+  stepCountIs,
+  UIMessage,
+} from "ai";
+import { createTools } from "@/lib/tools";
+import { SYSTEM_PROMPT } from "@/lib/prompts";
+
+// Vercel Fluid compute — allow up to 3 minutes for multi-step analysis
+export const maxDuration = 180;
+
+// Default models via Vercel AI Gateway (overridable from the UI)
+const MODEL_CONFIG = {
+  analyze: "anthropic/claude-haiku-4-5",      // Fast/cheap for plan generation
+  codeGen: "anthropic/claude-sonnet-4.6",     // Capable for Python code generation
+  codeGenFallback: "openai/gpt-4o",           // Fallback if primary model errors
+} as const;
+
+export async function POST(req: Request) {
+  const body = await req.json();
+  const {
+    messages,
+    csvText,
+    schemaDescription,
+    analyzeModel: clientAnalyzeModel,
+    codeGenModel: clientCodeGenModel,
+  } = body as {
+    messages: UIMessage[];
+    csvText: string;
+    schemaDescription: string;
+    analyzeModel?: string;
+    codeGenModel?: string;
+  };
+
+  const analyzeModel = clientAnalyzeModel || MODEL_CONFIG.analyze;
+  const codeGenModel = clientCodeGenModel || MODEL_CONFIG.codeGen;
+
+  console.log("[chat] POST received", {
+    messageCount: messages?.length,
+    hasCsvText: !!csvText,
+    analyzeModel,
+    codeGenModel,
+  });
+
+  const modelMessages = await convertToModelMessages(messages);
+
+  try {
+    const result = createStreamResult(
+      codeGenModel, analyzeModel, modelMessages, csvText, schemaDescription,
+    );
+    return result.toUIMessageStreamResponse();
+  } catch (err) {
+    console.error("[chat] Primary model failed, trying fallback:", err);
+    const result = createStreamResult(
+      MODEL_CONFIG.codeGenFallback, analyzeModel, modelMessages, csvText, schemaDescription,
+    );
+    return result.toUIMessageStreamResponse();
+  }
+}
+
+function createStreamResult(
+  model: string,
+  analyzeModel: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  messages: any[],
+  csvText: string,
+  schemaDescription: string,
+) {
+  const tools = createTools(csvText, schemaDescription, model, {
+    requireApproval: true,
+    analyzeModel,
+  });
+
+  return streamText({
+    model,
+    system: SYSTEM_PROMPT,
+    messages,
+    tools,
+    // 6 steps allows: plan → execute → compose + up to 3 retries on sandbox errors
+    stopWhen: stepCountIs(6),
+  });
+}

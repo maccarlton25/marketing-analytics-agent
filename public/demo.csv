@@ -1,0 +1,61 @@
+month,channel,campaign,spend,impressions,clicks,conversions,revenue,region
+2024-01,Google Ads,Brand Search,12000,180000,9200,340,48000,North America
+2024-01,Google Ads,Generic Search,18000,220000,7800,210,31500,North America
+2024-01,Meta,Retargeting,8000,320000,11000,380,42000,North America
+2024-01,Meta,Lookalike,15000,480000,14000,290,33500,North America
+2024-01,Email,Newsletter,2000,45000,5400,420,52000,North America
+2024-01,Email,Win-back,1500,12000,1800,85,9200,North America
+2024-01,LinkedIn,Sponsored Content,9000,65000,2100,48,14400,North America
+2024-02,Google Ads,Brand Search,12500,185000,9500,355,50200,North America
+2024-02,Google Ads,Generic Search,19000,230000,8100,225,34000,North America
+2024-02,Meta,Retargeting,8500,340000,11800,400,45000,North America
+2024-02,Meta,Lookalike,16000,500000,15000,310,36000,North America
+2024-02,Email,Newsletter,2000,46000,5600,435,54000,North America
+2024-02,Email,Win-back,1500,11500,1700,78,8500,North America
+2024-02,LinkedIn,Sponsored Content,9500,68000,2200,52,15600,North America
+2024-03,Google Ads,Brand Search,13000,190000,9800,370,53000,North America
+2024-03,Google Ads,Generic Search,20000,240000,8400,240,36500,North America
+2024-03,Meta,Retargeting,9000,360000,12500,420,48000,North America
+2024-03,Meta,Lookalike,17000,520000,16000,330,38500,North America
+2024-03,Email,Newsletter,2200,48000,5900,450,56500,North America
+2024-03,Email,Win-back,1800,13000,2000,92,10500,North America
+2024-03,LinkedIn,Sponsored Content,10000,72000,2400,58,17400,North America
+2024-04,Google Ads,Brand Search,13500,195000,10000,385,55000,North America
+2024-04,Google Ads,Generic Search,21000,250000,8700,255,39000,North America
+2024-04,Meta,Retargeting,9500,380000,13200,440,51000,North America
+2024-04,Meta,Lookalike,18000,540000,17000,350,41000,North America
+2024-04,Email,Newsletter,2200,49000,6100,460,58000,North America
+2024-04,Email,Win-back,2000,14000,2200,100,11800,North America
+2024-04,LinkedIn,Sponsored Content,10500,75000,2500,62,18600,North America
+2024-05,Google Ads,Brand Search,14000,200000,10200,400,57500,North America
+2024-05,Google Ads,Generic Search,22000,260000,9000,270,41500,North America
+2024-05,Meta,Retargeting,10000,400000,14000,460,54000,North America
+2024-05,Meta,Lookalike,19000,560000,18000,370,43500,North America
+2024-05,Email,Newsletter,2500,50000,6300,470,59500,North America
+2024-05,Email,Win-back,2200,15000,2400,108,12800,North America
+2024-05,LinkedIn,Sponsored Content,11000,78000,2600,65,19500,North America
+2024-06,Google Ads,Brand Search,14500,205000,10500,410,59000,North America
+2024-06,Google Ads,Generic Search,23000,270000,9300,280,43000,North America
+2024-06,Meta,Retargeting,10500,420000,14800,480,56000,North America
+2024-06,Meta,Lookalike,20000,580000,19000,385,45500,North America
+2024-06,Email,Newsletter,2500,51000,6500,480,61000,North America
+2024-06,Email,Win-back,2500,16000,2600,115,13800,North America
+2024-06,LinkedIn,Sponsored Content,11500,80000,2700,68,20400,North America
+2024-01,Google Ads,Brand Search,8000,120000,6100,220,31000,Europe
+2024-01,Meta,Retargeting,6000,240000,8200,280,31000,Europe
+2024-01,Email,Newsletter,1500,32000,3800,300,37000,Europe
+2024-02,Google Ads,Brand Search,8500,125000,6300,230,33000,Europe
+2024-02,Meta,Retargeting,6500,255000,8800,295,33500,Europe
+2024-02,Email,Newsletter,1500,33000,3900,310,38500,Europe
+2024-03,Google Ads,Brand Search,9000,130000,6500,240,35000,Europe
+2024-03,Meta,Retargeting,7000,270000,9400,310,36000,Europe
+2024-03,Email,Newsletter,1700,34000,4100,320,40000,Europe
+2024-04,Google Ads,Brand Search,9500,135000,6700,250,37000,Europe
+2024-04,Meta,Retargeting,7500,285000,10000,325,38500,Europe
+2024-04,Email,Newsletter,1700,35000,4200,330,41500,Europe
+2024-05,Google Ads,Brand Search,10000,140000,6900,260,39000,Europe
+2024-05,Meta,Retargeting,8000,300000,10600,340,41000,Europe
+2024-05,Email,Newsletter,1800,36000,4300,340,43000,Europe
+2024-06,Google Ads,Brand Search,10500,145000,7100,270,41000,Europe
+2024-06,Meta,Retargeting,8500,315000,11200,355,43500,Europe
+2024-06,Email,Newsletter,1800,37000,4400,350,44500,Europe
