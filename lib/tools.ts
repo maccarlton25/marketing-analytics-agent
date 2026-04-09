@@ -1,7 +1,6 @@
 import { tool } from "ai";
 import { z } from "zod";
 import { executeAnalysis } from "@/lib/sandbox";
-import { chartStore } from "@/lib/chart-store";
 
 /**
  * Creates the agent's tool set. Shared between the chat route and eval harness.
@@ -41,7 +40,7 @@ export function createTools(
       }),
       needsApproval: options.requireApproval ?? false,
       execute: async (plan) => {
-        console.log("[planAnalysis] type:", plan.analysisType, "charts:", plan.charts.length);
+        console.log(`  [planAnalysis] ${plan.analysisType} | ${plan.computations.length} computations | ${plan.charts.length} charts`);
         return {
           plan,
           schemaDescription,
@@ -67,10 +66,9 @@ export function createTools(
         ),
       }),
       execute: async ({ code }, { abortSignal }) => {
-        console.log("[executeAnalysis] code length:", code?.length, "model:", model);
+        console.log(`  [executeAnalysis] ${code?.length ?? 0} chars of Python`);
         const result = await executeAnalysis(csvText, code, abortSignal);
         if (!result.success) {
-          console.log("[executeAnalysis] FAILED:", result.error);
           return {
             success: false,
             error: result.error,
@@ -79,19 +77,25 @@ export function createTools(
             _meta: { model, durationMs: result.durationMs },
           };
         }
-        console.log(
-          "[executeAnalysis] SUCCESS in", result.durationMs, "ms,",
-          result.charts.length, "charts",
-        );
-        // Store full chart images in memory — the UI fetches them via /api/charts/[id].
-        // Only return chart IDs in the tool result to keep model context small.
-        chartStore.setAll(result.charts);
+        console.log(`  [executeAnalysis] ✓ ${result.charts.length} charts in ${(result.durationMs / 1000).toFixed(1)}s`);
+        // Charts with base64 go to the client via the stream.
+        // toModelOutput below strips them so the model only sees IDs.
         return {
           success: true,
+          charts: result.charts,
           chartIds: result.charts.map((c) => c.id),
           findings: result.findings,
           _meta: { model, durationMs: result.durationMs },
         };
+      },
+      // Control what the model sees — strip base64 chart data to keep context small.
+      // The full execute result (with charts) still streams to the client.
+      toModelOutput({ output }) {
+        if (!output.success) {
+          return { type: "content" as const, value: [{ type: "text" as const, text: JSON.stringify(output) }] };
+        }
+        const { charts: _charts, ...rest } = output;
+        return { type: "content" as const, value: [{ type: "text" as const, text: JSON.stringify(rest) }] };
       },
     }),
 
@@ -108,7 +112,7 @@ export function createTools(
         ),
       }),
       execute: async ({ markdown }) => {
-        console.log("[composeReport] report length:", markdown?.length);
+        console.log(`  [composeReport] ${markdown?.length ?? 0} chars`);
         return {
           markdown,
           _meta: { model },

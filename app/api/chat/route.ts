@@ -18,6 +18,16 @@ const MODEL_CONFIG = {
   codeGenFallback: "openai/gpt-5.4",           // Fallback if primary model errors
 } as const;
 
+/** e.g. "anthropic/claude-sonnet-4.6" → "sonnet-4.6" */
+function shortModel(model: string): string {
+  return model.split("/").pop() ?? model;
+}
+
+function fmtTokens(n: number | undefined): string {
+  if (n == null) return "?";
+  return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
+}
+
 export async function POST(req: Request) {
   const body = await req.json();
   const {
@@ -41,26 +51,35 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid model selection" }, { status: 400 });
   }
 
-  console.log("[chat] POST received", {
-    messageCount: messages?.length,
-    hasCsvText: !!csvText,
-    analyzeModel,
-    codeGenModel,
-  });
+  const requestStart = Date.now();
+  console.log(`\n[chat] ${"─".repeat(50)}`);
+  console.log(`[chat] Turn ${messages?.length ?? 0} | planner: ${shortModel(analyzeModel)} | codeGen: ${shortModel(codeGenModel)}`);
+  console.log(`[chat] Messages: ${messages?.length ?? 0} | CSV: ${csvText ? `${csvText.length} chars` : "none"}`);
 
   // Strip denied tool approvals (avoids orphaned tool_use blocks that Anthropic rejects)
   const cleanedMessages = stripDeniedToolParts(messages);
-  const modelMessages = await convertToModelMessages(cleanedMessages);
+
+  // Create tools first so convertToModelMessages can use toModelOutput
+  // to strip chart base64 from previous turns
+  const tools = createTools(csvText, schemaDescription, codeGenModel, {
+    requireApproval: true,
+    analyzeModel,
+  });
+  const modelMessages = await convertToModelMessages(cleanedMessages, { tools });
 
   try {
     const result = createStreamResult(
-      codeGenModel, analyzeModel, modelMessages, csvText, schemaDescription,
+      codeGenModel, analyzeModel, modelMessages, tools, requestStart,
     );
     return result.toUIMessageStreamResponse();
   } catch (err) {
-    console.error("[chat] Primary model failed, trying fallback:", err);
+    console.error(`[chat] Primary model failed (${shortModel(codeGenModel)}), falling back to ${shortModel(MODEL_CONFIG.codeGenFallback)}:`, err);
+    const fallbackTools = createTools(csvText, schemaDescription, MODEL_CONFIG.codeGenFallback, {
+      requireApproval: true,
+      analyzeModel,
+    });
     const result = createStreamResult(
-      MODEL_CONFIG.codeGenFallback, analyzeModel, modelMessages, csvText, schemaDescription,
+      MODEL_CONFIG.codeGenFallback, analyzeModel, modelMessages, fallbackTools, requestStart,
     );
     return result.toUIMessageStreamResponse();
   }
@@ -71,15 +90,10 @@ function createStreamResult(
   analyzeModel: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messages: any[],
-  csvText: string,
-  schemaDescription: string,
+  tools: ReturnType<typeof createTools>,
+  requestStart: number,
 ) {
-  const tools = createTools(csvText, schemaDescription, model, {
-    requireApproval: true,
-    analyzeModel,
-  });
-
-  let stepCount = 0;
+  let stepNumber = 0;
 
   return streamText({
     model,
@@ -88,18 +102,47 @@ function createStreamResult(
     tools,
     // 8 steps: plan(1) + execute(2) + compose(3) + up to 2 retries (execute+compose each)
     stopWhen: stepCountIs(8),
-    prepareStep: ({ stepNumber }) => {
+    prepareStep: ({ stepNumber: n }) => {
       // Route step 0 (planAnalysis) to the cheaper/faster analyze model
-      if (stepNumber === 0) return { model: analyzeModel };
+      if (n === 0) return { model: analyzeModel };
       return {};
     },
-    onStepFinish: ({ finishReason, usage, toolCalls }) => {
-      stepCount++;
+    onStepFinish: ({ finishReason, usage, toolCalls, toolResults, response }) => {
+      const step = stepNumber++;
+      const stepModel = response?.modelId ? shortModel(response.modelId) : shortModel(model);
       const toolNames = toolCalls.map((tc) => tc.toolName);
       const label = toolNames.length > 0 ? toolNames.join(", ") : "text";
+
+      const cached = usage?.inputTokenDetails?.cacheReadTokens;
+      const cacheStr = cached ? ` (${fmtTokens(cached)} cached)` : "";
+
+      // Show tool result summaries inline
+      const resultSummaries = toolResults.map((tr) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const out = (tr as any).output;
+        if (!out) return null;
+        if (tr.toolName === "executeAnalysis") {
+          if (out.success) return `✓ ${out.chartIds?.length ?? 0} charts`;
+          return `✗ ${(out.error as string)?.slice(0, 80)}`;
+        }
+        if (tr.toolName === "composeReport") return `${(out.markdown as string)?.length ?? 0} chars`;
+        if (tr.toolName === "planAnalysis") return `${out.plan?.charts?.length ?? 0} charts planned`;
+        return null;
+      }).filter(Boolean);
+
       console.log(
-        `[step ${stepCount}/8] ${label} | ${finishReason} | in: ${usage?.inputTokens ?? "?"} out: ${usage?.outputTokens ?? "?"} tokens`,
+        `[step] ${label} → ${stepModel} | ${fmtTokens(usage?.inputTokens)} in${cacheStr} → ${fmtTokens(usage?.outputTokens)} out | ${finishReason}` +
+        (resultSummaries.length > 0 ? ` | ${resultSummaries.join("; ")}` : ""),
       );
+    },
+    onFinish: ({ steps, totalUsage }) => {
+      const elapsed = ((Date.now() - requestStart) / 1000).toFixed(1);
+      const cached = totalUsage?.inputTokenDetails?.cacheReadTokens;
+      const cacheStr = cached ? ` (${fmtTokens(cached)} cached)` : "";
+      console.log(
+        `[chat] Done in ${steps.length} steps | ${fmtTokens(totalUsage?.totalTokens)} total tokens${cacheStr} | ${elapsed}s`,
+      );
+      console.log(`[chat] ${"─".repeat(50)}\n`);
     },
   });
 }

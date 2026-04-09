@@ -26,8 +26,8 @@ The app loads a bundled marketing dataset on startup. Upload a different CSV at 
 │  ┌──────────────┐          ┌──────────────────────────┐ │
 │  │   Chat UI    │◄────────►│  Report Panel            │ │
 │  │              │          │  - Markdown (remark-gfm) │ │
-│  │  useChat()   │          │  - Inline charts (base64)│ │
-│  │  Transport   │          │  - Fullscreen zoom       │ │
+│  │  useChat()   │          │  - Charts (toModelOutput)│ │
+│  │  Transport   │          │  - PDF export            │ │
 │  └──────┬───────┘          └──────────────────────────┘ │
 │         │                                               │
 │  ┌──────▼───────────────────────────────────────────┐   │
@@ -51,7 +51,7 @@ The app loads a bundled marketing dataset on startup. Upload a different CSV at 
 │  ┌──────────────────────────────────────────────────┐   │
 │  │           Vercel AI Gateway                      │   │
 │  │  Routes model strings to providers:              │   │
-│  │  anthropic/claude-sonnet-4.6, openai/gpt-5.4, etc │   │
+│  │  anthropic/claude-sonnet-4.6, openai/gpt-5.4, etc│   │
 │  └──────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -122,11 +122,11 @@ Each `executeAnalysis` call spins up a fresh [Vercel Sandbox](https://vercel.com
 
 **Two-phase sandbox networking** — Dependencies install with network access, then `updateNetworkPolicy("deny-all")` locks the sandbox before executing LLM-generated Python. The code never has network access.
 
-**Self-healing code execution** — `streamText` runs with `stopWhen: stepCountIs(6)`. A normal flow takes 3 steps (plan → execute → compose), leaving 3 spare steps for retries. When Python code errors, the sandbox returns the error and stdout to the model, which fixes the code and calls `executeAnalysis` again. Each retry gets a fresh Sandbox — no state is shared between attempts. The tradeoff, of course, being ~30s to re-initialize the sandbox and execute the code.
+**Self-healing code execution** — `streamText` runs with `stopWhen: stepCountIs(8)`. A normal flow takes 3 steps (plan → execute → compose), leaving 5 spare steps for retries. When Python code errors, the sandbox returns the error and stdout to the model, which fixes the code and calls `executeAnalysis` again. Each retry gets a fresh Sandbox — no state is shared between attempts. The tradeoff, of course, being ~30s to re-initialize the sandbox and execute the code.
 
 **Per-tool model routing** — Plan/analysis uses a fast/cheap model (Haiku), code generation uses a capable model (Sonnet). Both are configurable from the UI via Vercel AI Gateway model strings. Available models include Anthropic (Sonnet 4.6, Haiku 4.5), OpenAI (GPT-5.4, GPT-5.4 Nano), and Google (Gemini 3 Flash).
 
-**Inline chart embedding** — The report panel parses chart references from markdown and renders base64 images inline where they're discussed, rather than appending them at the bottom.
+**Context-safe chart delivery** — Chart base64 PNGs (100KB+ each) are returned in the `executeAnalysis` tool result so they stream to the client, but `toModelOutput` strips them before the model sees them — the model only gets chart IDs and findings. On subsequent turns, `convertToModelMessages` applies the same `toModelOutput` transform to previous tool results, so base64 never enters the context window. Without this, a single 3-chart analysis can add 200K+ tokens to context.
 
 **Model fallback** — If the primary code generation model errors, the route falls back to an alternate provider automatically.
 
@@ -166,10 +166,11 @@ Outputs JSON + an HTML report to `eval/results/`. The HTML report includes summa
 - `tool` with `inputSchema` (Zod) for structured tool definitions shared between prod and eval
 - `needsApproval` + `addToolApprovalResponse` for human-in-the-loop plan approval
 - `useChat` + `DefaultChatTransport` on the client with `sendAutomaticallyWhen` to auto-resume after approval
-- `stopWhen: stepCountIs(6)` to bound agent loops while allowing retries
+- `stopWhen: stepCountIs(8)` to bound agent loops while allowing retries
+- `prepareStep` to route step 0 (plan generation) to a cheaper/faster model
 - `convertToModelMessages` for server-side message format conversion
 - `generateText` in the eval harness (same tools, no streaming needed)
 
 **Vercel AI Gateway** — Model strings like `anthropic/claude-sonnet-4.6`, `openai/gpt-5.4`, and `google/gemini-3-flash` route through the gateway, providing a single API key for multiple providers. Models are configurable from the UI — "Model" controls the primary model, "Planner" controls the plan generation step.
 
-**Vercel Sandbox** — Each `executeAnalysis` call creates a Vercel Sandbox (`@vercel/sandbox`, Python 3.13, 3-min timeout). Dependencies install with network access, then `updateNetworkPolicy("deny-all")` locks the VM before any LLM-generated code runs. No sandbox reuse between calls — fresh VM every time for isolation.
+**Vercel Sandbox** — Each `executeAnalysis` call creates a Vercel Sandbox (`@vercel/sandbox`, Python 3.13, 3-min timeout). Dependencies install with network access, then `updateNetworkPolicy("deny-all")` locks the VM before any LLM-generated code runs. No sandbox reuse between calls — fresh VM every time for isolation. Supports abort signals — if the client disconnects, the sandbox is stopped immediately. This could be optimized further to reuse sandbox across tool retries, something to consider for a production build.

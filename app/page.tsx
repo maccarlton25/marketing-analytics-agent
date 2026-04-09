@@ -109,10 +109,10 @@ export default function Home() {
     return null;
   };
 
-  // Extract report markdown and chart IDs from messages
-  const { reportMarkdown, chartIds } = useMemo(() => {
+  // Extract report markdown and charts from messages
+  const { reportMarkdown, reportCharts } = useMemo(() => {
     let markdown: string | null = null;
-    let ids: string[] = [];
+    let charts: { id: string; base64: string }[] = [];
     let inFlight = false;
 
     for (const msg of messages) {
@@ -130,7 +130,7 @@ export default function Home() {
         ) {
           inFlight = true;
           markdown = null;
-          ids = [];
+          charts = [];
         }
 
         if (
@@ -144,44 +144,19 @@ export default function Home() {
         if (
           toolName === "executeAnalysis" &&
           p.state === "output-available" &&
-          Array.isArray(p.output?.chartIds)
+          Array.isArray(p.output?.charts)
         ) {
-          ids = p.output.chartIds as string[];
+          charts = p.output.charts as { id: string; base64: string }[];
         }
       }
     }
 
-    if (inFlight && !markdown && ids.length === 0) {
-      return { reportMarkdown: null, chartIds: [] as string[] };
+    if (inFlight && !markdown && charts.length === 0) {
+      return { reportMarkdown: null, reportCharts: [] as { id: string; base64: string }[] };
     }
 
-    return { reportMarkdown: markdown, chartIds: ids };
+    return { reportMarkdown: markdown, reportCharts: charts };
   }, [messages]);
-
-  // Fetch chart images from the server store (base64 is not in tool output to save context tokens)
-  const [reportCharts, setReportCharts] = useState<{ id: string; base64: string }[]>([]);
-  const chartIdsKey = chartIds.join(",");
-  useEffect(() => {
-    if (!chartIdsKey) {
-      setReportCharts([]);
-      return;
-    }
-    const ids = chartIdsKey.split(",");
-    let cancelled = false;
-    Promise.all(
-      ids.map((id) =>
-        fetch(`/api/charts?id=${encodeURIComponent(id)}`)
-          .then((r) => r.json())
-          .then((data) => ({ id, base64: data.base64 as string }))
-          .catch(() => null)
-      ),
-    ).then((results) => {
-      if (!cancelled) {
-        setReportCharts(results.filter((r): r is { id: string; base64: string } => r !== null));
-      }
-    });
-    return () => { cancelled = true; };
-  }, [chartIdsKey]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

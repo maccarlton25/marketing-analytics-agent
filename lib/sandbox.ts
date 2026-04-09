@@ -26,11 +26,12 @@ export async function executeAnalysis(
     runtime: "python3.13",
     timeout: 3 * 60 * 1000,
   });
+  console.log(`  [sandbox] VM created in ${((Date.now() - start) / 1000).toFixed(1)}s`);
 
   // Stop the sandbox if the client disconnects
   if (abortSignal) {
     abortSignal.addEventListener("abort", () => {
-      console.log("[sandbox] Abort signal received, stopping VM");
+      console.log("  [sandbox] Abort signal received, stopping VM");
       sandbox.stop();
     }, { once: true });
   }
@@ -39,7 +40,7 @@ export async function executeAnalysis(
     await sandbox.writeFiles([{ path: "data.csv", content: csvText }]);
 
     // Phase 1: Install dependencies with network access
-    console.log("[sandbox] Installing dependencies...");
+    const installStart = Date.now();
     const installResult = await sandbox.runCommand(
       "pip",
       ["install", "matplotlib", "pandas", "scipy", "statsmodels", "scikit-learn", "--quiet"],
@@ -47,6 +48,7 @@ export async function executeAnalysis(
 
     if (installResult.exitCode !== 0) {
       const stderr = await installResult.stderr();
+      console.log(`  [sandbox] pip install FAILED in ${((Date.now() - installStart) / 1000).toFixed(1)}s`);
       return {
         success: false,
         charts: [],
@@ -56,22 +58,25 @@ export async function executeAnalysis(
         durationMs: Date.now() - start,
       };
     }
-    console.log("[sandbox] Dependencies installed");
+    console.log(`  [sandbox] pip install: ${((Date.now() - installStart) / 1000).toFixed(1)}s`);
 
     // Phase 2: Lock down network before running LLM-generated code
     await sandbox.updateNetworkPolicy("deny-all");
-    console.log("[sandbox] Network locked to deny-all");
 
     // Write the wrapped analysis code
     const wrappedCode = wrapAnalysisCode(pythonCode);
     await sandbox.writeFiles([{ path: "analysis.py", content: wrappedCode }]);
 
     // Execute
+    const execStart = Date.now();
     const runResult = await sandbox.runCommand("python3", ["analysis.py"]);
     const stdout = await runResult.stdout();
     const stderr = await runResult.stderr();
+    const execMs = Date.now() - execStart;
 
     if (runResult.exitCode !== 0) {
+      const errorPreview = (stderr || "Analysis script failed").split("\n").slice(-3).join(" | ");
+      console.log(`  [sandbox] exec FAILED in ${(execMs / 1000).toFixed(1)}s: ${errorPreview.slice(0, 120)}`);
       return {
         success: false,
         charts: [],
@@ -115,13 +120,8 @@ export async function executeAnalysis(
       }
     }
 
-    console.log(
-      "[sandbox] Analysis complete:",
-      charts.length,
-      "charts,",
-      Object.keys(findings).length,
-      "finding keys",
-    );
+    const totalMs = Date.now() - start;
+    console.log(`  [sandbox] exec: ${(execMs / 1000).toFixed(1)}s | ${charts.length} charts | ${Object.keys(findings).length} findings | total: ${(totalMs / 1000).toFixed(1)}s`);
 
     return {
       success: true,
