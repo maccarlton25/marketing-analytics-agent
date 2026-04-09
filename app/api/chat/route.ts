@@ -76,11 +76,20 @@ function createStreamResult(
     requireApproval: true,
   });
 
+  // Gemini 3 models generate thought_signatures when thinking is enabled.
+  // The AI Gateway path doesn't yet preserve them across turns via
+  // convertToModelMessages, causing a warning and degraded performance.
+  // Disable thinking for Google models to avoid generating signatures at all.
+  const providerOptions = model.startsWith("google/") || analyzeModel.startsWith("google/")
+    ? { google: { thinkingConfig: { thinkingBudget: 0 } } }
+    : undefined;
+
   return streamText({
     model,
     system: SYSTEM_PROMPT,
     messages,
     tools,
+    ...(providerOptions ? { providerOptions } : {}),
     // Budget: plan(1) + execute(1) + up to 4 retries(4) + compose(1) = 7 steps, +1 buffer
     stopWhen: stepCountIs(8),
     // Switch to the cheaper analyze model for the planning step
