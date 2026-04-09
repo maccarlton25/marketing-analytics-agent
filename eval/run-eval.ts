@@ -317,10 +317,7 @@ async function main() {
   const casesToRun = TEST_CASES.slice(0, maxCases);
 
   const totalStart = Date.now();
-  console.log(`Running ${casesToRun.length}/${TEST_CASES.length} eval cases...\n`);
-
-  // Run all cases in parallel — each gets its own sandbox
-  console.log(`Running ${casesToRun.length} cases in parallel...\n`);
+  console.log(`Running ${casesToRun.length}/${TEST_CASES.length} eval cases in parallel...\n`);
   const settled = await Promise.allSettled(
     casesToRun.map((testCase) => runCase(testCase)),
   );

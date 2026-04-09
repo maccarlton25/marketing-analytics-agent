@@ -56,10 +56,15 @@ export function createTools(
         "and print a JSON findings object to stdout.",
       inputSchema: z.object({
         code: z.string().describe(
-          "Python code that performs the analysis. df is pre-loaded. " +
-          "Save charts as chart_1.png, chart_2.png etc. " +
-          "Print findings as JSON to stdout at the end: print(json.dumps(findings)). " +
-          "Do not call plt.show().",
+          "Python code that performs the analysis. Rules:\n" +
+          "- df is pre-loaded from data.csv; matplotlib.use('Agg') is already set\n" +
+          "- Save charts as chart_1.png, chart_2.png etc. in the current directory\n" +
+          "- Print findings as a single JSON object to stdout at the end: print(json.dumps(findings, default=str)) — always use default=str for numpy/pandas types\n" +
+          "- Available packages: pandas, matplotlib, scipy, statsmodels, scikit-learn, numpy (all pre-installed)\n" +
+          "- Do NOT use seaborn — it is not installed and cannot be installed\n" +
+          "- You cannot pip install anything — the sandbox has no network access\n" +
+          "- Do not call plt.show()\n" +
+          "- Keep charts clean and labeled — title, axis labels, legend where needed",
         ),
         analysisDescription: z.string().describe(
           "One sentence describing what this analysis computes",
