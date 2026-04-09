@@ -91,13 +91,13 @@ function createStreamResult(
       }
       return { model };
     },
-    onStepFinish({ stepType, toolCalls, finishReason, usage }) {
+    onStepFinish({ stepNumber, toolCalls, finishReason, usage }) {
       console.log("[step]", {
-        stepType,
+        stepNumber,
         finishReason,
         tools: toolCalls.map((tc) => tc.toolName),
-        inputTokens: usage.promptTokens,
-        outputTokens: usage.completionTokens,
+        inputTokens: usage.inputTokens,
+        outputTokens: usage.outputTokens,
       });
     },
   });
