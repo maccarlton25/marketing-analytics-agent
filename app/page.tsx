@@ -13,7 +13,7 @@ const MODEL_META: Record<string, { label: string; tier: string }> = {
   "anthropic/claude-haiku-4-5": { label: "Haiku 4.5", tier: "Fast" },
   "openai/gpt-5.4": { label: "GPT-5.4", tier: "Balanced" },
   "openai/gpt-5.4-nano": { label: "GPT-5.4 Nano", tier: "Fast" },
-  "google/gemini-3-flash": { label: "Gemini 3 Flash", tier: "Fast" },
+
 };
 
 const MODELS = ALLOWED_MODELS.map((id) => ({

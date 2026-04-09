@@ -4,7 +4,6 @@ export const ALLOWED_MODELS = [
   "anthropic/claude-haiku-4-5",
   "openai/gpt-5.4",
   "openai/gpt-5.4-nano",
-  "google/gemini-3-flash",
 ] as const;
 
 export type ModelId = (typeof ALLOWED_MODELS)[number];
