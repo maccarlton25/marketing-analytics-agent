@@ -1,6 +1,7 @@
 import { tool } from "ai";
 import { z } from "zod";
 import { executeAnalysis } from "@/lib/sandbox";
+import { chartStore } from "@/lib/chart-store";
 
 /**
  * Creates the agent's tool set. Shared between the chat route and eval harness.
@@ -65,9 +66,9 @@ export function createTools(
           "One sentence describing what this analysis computes",
         ),
       }),
-      execute: async ({ code }) => {
+      execute: async ({ code }, { abortSignal }) => {
         console.log("[executeAnalysis] code length:", code?.length, "model:", model);
-        const result = await executeAnalysis(csvText, code);
+        const result = await executeAnalysis(csvText, code, abortSignal);
         if (!result.success) {
           console.log("[executeAnalysis] FAILED:", result.error);
           return {
@@ -82,9 +83,12 @@ export function createTools(
           "[executeAnalysis] SUCCESS in", result.durationMs, "ms,",
           result.charts.length, "charts",
         );
+        // Store full chart images in memory — the UI fetches them via /api/charts/[id].
+        // Only return chart IDs in the tool result to keep model context small.
+        chartStore.setAll(result.charts);
         return {
           success: true,
-          charts: result.charts,
+          chartIds: result.charts.map((c) => c.id),
           findings: result.findings,
           _meta: { model, durationMs: result.durationMs },
         };

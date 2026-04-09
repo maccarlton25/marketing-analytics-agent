@@ -17,6 +17,7 @@ export interface AnalysisResult {
 export async function executeAnalysis(
   csvText: string,
   pythonCode: string,
+  abortSignal?: AbortSignal,
 ): Promise<AnalysisResult> {
   const start = Date.now();
 
@@ -25,6 +26,14 @@ export async function executeAnalysis(
     runtime: "python3.13",
     timeout: 3 * 60 * 1000,
   });
+
+  // Stop the sandbox if the client disconnects
+  if (abortSignal) {
+    abortSignal.addEventListener("abort", () => {
+      console.log("[sandbox] Abort signal received, stopping VM");
+      sandbox.stop();
+    }, { once: true });
+  }
 
   try {
     await sandbox.writeFiles([{ path: "data.csv", content: csvText }]);

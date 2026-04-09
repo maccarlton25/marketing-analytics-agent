@@ -6,6 +6,7 @@ import {
 } from "ai";
 import { createTools } from "@/lib/tools";
 import { SYSTEM_PROMPT } from "@/lib/prompts";
+import { isAllowedModel } from "@/lib/models";
 
 // Vercel Fluid compute — allow up to 3 minutes for multi-step analysis
 export const maxDuration = 180;
@@ -36,6 +37,10 @@ export async function POST(req: Request) {
   const analyzeModel = clientAnalyzeModel || MODEL_CONFIG.analyze;
   const codeGenModel = clientCodeGenModel || MODEL_CONFIG.codeGen;
 
+  if (!isAllowedModel(analyzeModel) || !isAllowedModel(codeGenModel)) {
+    return Response.json({ error: "Invalid model selection" }, { status: 400 });
+  }
+
   console.log("[chat] POST received", {
     messageCount: messages?.length,
     hasCsvText: !!csvText,
@@ -43,8 +48,7 @@ export async function POST(req: Request) {
     codeGenModel,
   });
 
-  // Strip denied tool-call parts so convertToModelMessages doesn't produce
-  // orphaned tool_use blocks (Anthropic requires every tool_use to have a tool_result).
+  // Strip denied tool approvals (avoids orphaned tool_use blocks that Anthropic rejects)
   const cleanedMessages = stripDeniedToolParts(messages);
   const modelMessages = await convertToModelMessages(cleanedMessages);
 
@@ -75,13 +79,28 @@ function createStreamResult(
     analyzeModel,
   });
 
+  let stepCount = 0;
+
   return streamText({
     model,
     system: SYSTEM_PROMPT,
     messages,
     tools,
-    // 6 steps allows: plan → execute → compose + up to 3 retries on sandbox errors
-    stopWhen: stepCountIs(6),
+    // 8 steps: plan(1) + execute(2) + compose(3) + up to 2 retries (execute+compose each)
+    stopWhen: stepCountIs(8),
+    prepareStep: ({ stepNumber }) => {
+      // Route step 0 (planAnalysis) to the cheaper/faster analyze model
+      if (stepNumber === 0) return { model: analyzeModel };
+      return {};
+    },
+    onStepFinish: ({ finishReason, usage, toolCalls }) => {
+      stepCount++;
+      const toolNames = toolCalls.map((tc) => tc.toolName);
+      const label = toolNames.length > 0 ? toolNames.join(", ") : "text";
+      console.log(
+        `[step ${stepCount}/8] ${label} | ${finishReason} | in: ${usage?.inputTokens ?? "?"} out: ${usage?.outputTokens ?? "?"} tokens`,
+      );
+    },
   });
 }
 

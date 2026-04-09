@@ -61,9 +61,9 @@ async function runCase(testCase: EvalCase): Promise<EvalResult> {
     }
     for (const tr of step.toolResults) {
       if (tr.toolName === "executeAnalysis") {
-        const output = (tr as unknown as { output: { success: boolean; charts?: unknown[] } }).output;
-        if (output?.success && Array.isArray(output.charts)) {
-          chartCount = output.charts.length;
+        const output = (tr as unknown as { output: { success: boolean; chartIds?: string[] } }).output;
+        if (output?.success && Array.isArray(output.chartIds)) {
+          chartCount = output.chartIds.length;
         }
       }
       if (tr.toolName === "composeReport") {
@@ -319,36 +319,39 @@ async function main() {
   const totalStart = Date.now();
   console.log(`Running ${casesToRun.length}/${TEST_CASES.length} eval cases...\n`);
 
-  const results: EvalResult[] = [];
+  // Run all cases in parallel — each gets its own sandbox
+  console.log(`Running ${casesToRun.length} cases in parallel...\n`);
+  const settled = await Promise.allSettled(
+    casesToRun.map((testCase) => runCase(testCase)),
+  );
 
-  for (const testCase of casesToRun) {
-    console.log(`[${testCase.id}] "${testCase.prompt}"`);
-    try {
-      const result = await runCase(testCase);
-      results.push(result);
-
+  const results: EvalResult[] = settled.map((outcome, i) => {
+    const testCase = casesToRun[i];
+    if (outcome.status === "fulfilled") {
+      const result = outcome.value;
       const status = result.passed ? "PASS" : "FAIL";
       console.log(
-        `  ${status} | score: ${result.score}/5 | charts: ${result.chartCount} | report: ${result.hasReport} | ${(result.durationMs / 1000).toFixed(1)}s`,
+        `[${result.id}] ${status} | score: ${result.score}/5 | charts: ${result.chartCount} | report: ${result.hasReport} | ${(result.durationMs / 1000).toFixed(1)}s`,
       );
       console.log(`  Judge: ${result.judgeReason}\n`);
-    } catch (err) {
-      console.error(`  ERROR: ${err}\n`);
-      results.push({
+      return result;
+    } else {
+      console.error(`[${testCase.id}] ERROR: ${outcome.reason}\n`);
+      return {
         id: testCase.id,
         prompt: testCase.prompt,
         rubric: testCase.rubric,
         passed: false,
         score: 0,
-        judgeReason: `Eval crashed: ${err}`,
+        judgeReason: `Eval crashed: ${outcome.reason}`,
         chartCount: 0,
         hasReport: false,
         toolSequence: [],
-        error: String(err),
+        error: String(outcome.reason),
         durationMs: Date.now() - totalStart,
-      });
+      };
     }
-  }
+  });
 
   const totalDuration = Date.now() - totalStart;
   const passed = results.filter((r) => r.passed).length;

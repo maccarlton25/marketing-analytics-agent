@@ -233,7 +233,7 @@ function ExecuteAnalysisPart({ part }: { part: any }) {
     const output = part.output as
       | {
           success?: boolean;
-          charts?: { id: string; base64: string }[];
+          chartIds?: string[];
           error?: string;
           hint?: string;
           _meta?: { model?: string; durationMs?: number };
@@ -241,7 +241,7 @@ function ExecuteAnalysisPart({ part }: { part: any }) {
       | undefined;
 
     const meta = output?._meta;
-    const chartCount = output?.charts?.length ?? 0;
+    const chartCount = output?.chartIds?.length ?? 0;
 
     return (
       <div className="my-2">

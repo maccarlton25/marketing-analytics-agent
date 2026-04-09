@@ -6,13 +6,20 @@ import FileUpload from "@/components/FileUpload";
 import ReportPanel from "@/components/ReportPanel";
 import MessagePart from "@/components/MessagePart";
 
-const MODELS = [
-  { id: "anthropic/claude-sonnet-4.6", label: "Sonnet 4.6", tier: "Balanced" },
-  { id: "anthropic/claude-haiku-4-5", label: "Haiku 4.5", tier: "Fast" },
-  { id: "openai/gpt-5.4", label: "GPT-5.4", tier: "Balanced" },
-  { id: "openai/gpt-5.4-nano", label: "GPT-5.4 Nano", tier: "Fast" },
-  { id: "google/gemini-3-flash", label: "Gemini 3 Flash", tier: "Fast" },
-];
+import { ALLOWED_MODELS } from "@/lib/models";
+
+const MODEL_META: Record<string, { label: string; tier: string }> = {
+  "anthropic/claude-sonnet-4.6": { label: "Sonnet 4.6", tier: "Balanced" },
+  "anthropic/claude-haiku-4-5": { label: "Haiku 4.5", tier: "Fast" },
+  "openai/gpt-5.4": { label: "GPT-5.4", tier: "Balanced" },
+  "openai/gpt-5.4-nano": { label: "GPT-5.4 Nano", tier: "Fast" },
+  "google/gemini-3-flash": { label: "Gemini 3 Flash", tier: "Fast" },
+};
+
+const MODELS = ALLOWED_MODELS.map((id) => ({
+  id,
+  ...MODEL_META[id],
+}));
 
 const SUGGESTED_PROMPTS = [
   { label: "Channel ROAS", prompt: "Which channels have the best ROAS? Rank them and identify underperformers." },
@@ -27,8 +34,8 @@ export default function Home() {
   const [datasetName, setDatasetName] = useState<string>("Marketing Campaigns");
   const [isUploading, setIsUploading] = useState(false);
   const [input, setInput] = useState("");
-  const [analyzeModel, setSchemaModel] = useState(MODELS[1].id);
-  const [codeGenModel, setCodeGenModel] = useState(MODELS[0].id);
+  const [analyzeModel, setSchemaModel] = useState<string>(MODELS[1].id);
+  const [codeGenModel, setCodeGenModel] = useState<string>(MODELS[0].id);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const csvRef = useRef(csvText);
@@ -102,11 +109,11 @@ export default function Home() {
     return null;
   };
 
-  // Extract report markdown and charts, but suppress stale data when a new analysis is running
-  const { reportMarkdown, reportCharts } = useMemo(() => {
+  // Extract report markdown and chart IDs from messages
+  const { reportMarkdown, chartIds } = useMemo(() => {
     let markdown: string | null = null;
-    let charts: { id: string; base64: string }[] = [];
-    let hasInFlightAnalysis = false;
+    let ids: string[] = [];
+    let inFlight = false;
 
     for (const msg of messages) {
       if (msg.role !== "assistant") continue;
@@ -117,15 +124,13 @@ export default function Home() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const p = part as any;
 
-        // Detect if a new executeAnalysis is currently running (not yet finished)
         if (
           toolName === "executeAnalysis" &&
           (p.state === "input-streaming" || p.state === "input-available")
         ) {
-          hasInFlightAnalysis = true;
-          // Clear previous results — new ones are coming
+          inFlight = true;
           markdown = null;
-          charts = [];
+          ids = [];
         }
 
         if (
@@ -139,20 +144,44 @@ export default function Home() {
         if (
           toolName === "executeAnalysis" &&
           p.state === "output-available" &&
-          Array.isArray(p.output?.charts)
+          Array.isArray(p.output?.chartIds)
         ) {
-          charts = p.output.charts as { id: string; base64: string }[];
+          ids = p.output.chartIds as string[];
         }
       }
     }
 
-    // If an analysis is in-flight but hasn't produced output yet, show nothing
-    if (hasInFlightAnalysis && !markdown && charts.length === 0) {
-      return { reportMarkdown: null, reportCharts: [] };
+    if (inFlight && !markdown && ids.length === 0) {
+      return { reportMarkdown: null, chartIds: [] as string[] };
     }
 
-    return { reportMarkdown: markdown, reportCharts: charts };
+    return { reportMarkdown: markdown, chartIds: ids };
   }, [messages]);
+
+  // Fetch chart images from the server store (base64 is not in tool output to save context tokens)
+  const [reportCharts, setReportCharts] = useState<{ id: string; base64: string }[]>([]);
+  const chartIdsKey = chartIds.join(",");
+  useEffect(() => {
+    if (!chartIdsKey) {
+      setReportCharts([]);
+      return;
+    }
+    const ids = chartIdsKey.split(",");
+    let cancelled = false;
+    Promise.all(
+      ids.map((id) =>
+        fetch(`/api/charts?id=${encodeURIComponent(id)}`)
+          .then((r) => r.json())
+          .then((data) => ({ id, base64: data.base64 as string }))
+          .catch(() => null)
+      ),
+    ).then((results) => {
+      if (!cancelled) {
+        setReportCharts(results.filter((r): r is { id: string; base64: string } => r !== null));
+      }
+    });
+    return () => { cancelled = true; };
+  }, [chartIdsKey]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
