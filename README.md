@@ -22,40 +22,40 @@ The app loads a bundled marketing dataset on startup. Upload a different CSV at 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                     Next.js App Router                  │
-│                                                         │
-│  ┌──────────────┐          ┌──────────────────────────┐ │
-│  │   Chat UI    │◄────────►│  Report Panel            │ │
-│  │              │          │  - Markdown (remark-gfm) │ │
-│  │  useChat()   │          │  - Charts (toModelOutput)│ │
-│  │  Transport   │          │  - PDF export            │ │
-│  └──────┬───────┘          └──────────────────────────┘ │
-│         │                                               │
-│  ┌──────▼───────────────────────────────────────────┐   │
-│  │              /api/chat (POST)                    │   │
-│  │                                                  │   │
-│  │  streamText() with 3 tools:                      │   │
-│  │                                                  │   │
-│  │  1. planAnalysis  ──► structured plan            │   │
-│  │     (needsApproval)   user approves/denies via UI│   │
-│  │                                                  │   │
-│  │  2. executeAnalysis ──► Python in Sandbox        │   │
-│  │     - writes data.csv                            │   │
-│  │     - pip install (network open)                 │   │
-│  │     - runs analysis (network denied)             │   │
-│  │     - reads chart_*.png + JSON findings          │   │
-│  │                                                  │   │
-│  │  3. composeReport ──► markdown report            │   │
-│  │                                                  │   │
-│  └──────────────────────────────────────────────────┘   │
-│                                                         │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │           Vercel AI Gateway                      │   │
-│  │  Routes model strings to providers:              │   │
-│  │  anthropic/claude-sonnet-4.6, openai/gpt-5.4, etc│   │
-│  └──────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│  Browser                                                     │
+│                                                              │
+│  ┌──────────────┐          ┌───────────────────────────────┐ │
+│  │   Chat UI    │◄────────►│  Report Panel                 │ │
+│  │  useChat()   │          │  Markdown + charts + PDF      │ │
+│  └──────┬───────┘          └───────────────────────────────┘ │
+│         │ messages[] + csvText (full state each request)     │
+└─────────┼────────────────────────────────────────────────────┘
+          │
+          ▼
+┌─────────────────────────────────┐
+│  Vercel Function (Fluid)       │
+│                                 │
+│  /api/chat — streamText()       │
+│  maxDuration: 180s              │
+│  up to 8 steps (w/ retries)     │
+│                                 │
+└──────┬──────────────┬───────────┘
+       │              │
+       ▼              ▼
+┌──────────────┐    ┌─────────────────────────────────┐
+│  AI Gateway  │    │  Vercel Sandbox (per-call)      │
+│              │    │  Firecracker microVM (Hive)     │
+│  Model       │    │  Python 3.13, 3-min timeout     │
+│  routing     │    │                                 │
+└──────┬───────┘    │  1. pip install (network open)  │
+       │            │  2. deny-all network policy     │
+       ▼            │  3. Run LLM-generated code      │
+┌──────────────┐    │  4. Return charts + findings    │
+│ LLM Provider │    └─────────────────────────────────┘
+│ Anthropic /  │
+│ OpenAI       │
+└──────────────┘
 ```
 
 ## Agent Flow
