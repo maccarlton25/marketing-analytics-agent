@@ -4,7 +4,7 @@ export const MODELS = [
   { id: "openai/gpt-5.4", label: "GPT-5.4", tier: "Balanced" },
   { id: "openai/gpt-5.4-nano", label: "GPT-5.4 Nano", tier: "Fast" },
   { id: "google/gemini-3-flash", label: "Gemini 3 Flash", tier: "Fast" },
-] as const;
+];
 
 const ALLOWED_MODEL_IDS = new Set(MODELS.map((m) => m.id));
 
