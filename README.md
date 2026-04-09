@@ -1,6 +1,8 @@
 # Marketing Analytics Agent
 
-An AI agent that turns natural-language questions into computed marketing reports with charts. Upload a CSV of campaign data, ask a question, and get a structured analysis — ROAS breakdowns, trend decomposition, anomaly detection — with inline visualizations.
+Enterprise marketing teams rely on analysts to turn raw campaign data into actionable reports. ROAS breakdowns, trend analysis, anomaly detection, and more. The turnaround is slow: marketers export data from their martech stack, file a request, and wait days for a notebook or slide deck to come back.
+
+This agent eliminates that bottleneck. Marketers upload a CSV, ask a question in plain English, and get a computed analysis report with charts in minutes. No code, no SQL, no notebooks. Reports can be refined conversationally and exported as PDFs for internal distribution.
 
 Built with the Vercel AI SDK, Vercel Sandbox, and Next.js 16.
 
@@ -117,6 +119,8 @@ Each `executeAnalysis` call spins up a fresh [Vercel Sandbox](https://vercel.com
 **What the LLM-generated code can access:** the pre-loaded `df` DataFrame, the installed Python packages, and the local filesystem. It cannot make network requests, access environment variables, or reach any external service.
 
 ## Key Design Decisions
+
+**General-purpose tool design** — `executeAnalysis` exposes a Python sandbox as a primitive, not a procedure. Rather than encoding specific analysis types as separate tools, the model decides what to compute and how to visualize it. This makes the agent flexible without adding new tools, but shifts correctness to code generation — which is why the retry loop, stdout contract, and sandboxing exist. Generality at the tool level is only viable because execution is locked down at the infrastructure level.
 
 **Human-in-the-loop approval** — New analyses require explicit user approval via the AI SDK's `needsApproval` + `addToolApprovalResponse`. This prevents wasted compute on unwanted analyses and demonstrates the SDK's tool approval primitive.
 
