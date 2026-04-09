@@ -34,7 +34,7 @@ The app loads a bundled marketing dataset on startup. Upload a different CSV at 
           │
           ▼
 ┌─────────────────────────────────┐
-│  Vercel Function (Fluid)       │
+│  Vercel Function (Fluid)        │
 │                                 │
 │  /api/chat — streamText()       │
 │  maxDuration: 180s              │
