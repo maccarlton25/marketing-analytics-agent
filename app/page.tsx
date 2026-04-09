@@ -211,7 +211,7 @@ export default function Home() {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            {csvText && (
+            {csvText && messages.length === 0 && (
               <>
                 <ModelSelect
                   label="Planner"
