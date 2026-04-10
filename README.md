@@ -44,17 +44,17 @@ The app loads a bundled marketing dataset on startup. Upload a different CSV at 
        │              │
        ▼              ▼
 ┌──────────────┐    ┌─────────────────────────────────┐
-│  AI Gateway  │    │  Vercel Sandbox (per-call)      │
+│  AI Gateway  │    │  Vercel Sandbox (per-request)   │
 │              │    │  Firecracker microVM (Hive)     │
 │  Model       │    │  Python 3.13, 3-min timeout     │
 │  routing     │    │                                 │
-└──────┬───────┘    │  1. pip install (network open)  │
-       │            │  2. deny-all network policy     │
-       ▼            │  3. Run LLM-generated code      │
-┌──────────────┐    │  4. Return charts + findings    │
-│ LLM Provider │    └─────────────────────────────────┘
-│ Anthropic /  │
-│ OpenAI       │
+└──────┬───────┘    │  1. Init on firs call:          │
+       │            │     pip install (network open)  │
+       ▼            │  2. deny-all network policy     │
+┌──────────────┐    │  3. Run LLM-generated code      │
+│ LLM Provider │    │  4. Reuse VM across retries     │
+│ Anthropic /  │    │  5. Stop on stream end/abort    │
+│ OpenAI       │    └─────────────────────────────────┘
 └──────────────┘
 ```
 
@@ -104,17 +104,17 @@ The agent chooses which tools to call based on the request. It is not a fixed pi
 
 ## Sandbox
 
-Each `executeAnalysis` call spins up a fresh [Vercel Sandbox](https://vercel.com/docs/sandbox) — a Firecracker microVM running Python 3.13 with a 3-minute timeout.
+Each POST to `/api/chat` gets one [Vercel Sandbox](https://vercel.com/docs/sandbox) session running Python 3.13 with a 3-minute timeout that matches the Vercel Function's `maxDuration`. The session is scoped to the request, created on first use, reused across retries within the same `streamText` loop (agent turn), and torn down when the response finishes.
 
 **Lifecycle:**
 
-1. VM created, CSV data written as `data.csv`
-2. **Network open** — `pip install` runs with internet access to fetch dependencies: `matplotlib`, `pandas`, `scipy`, `statsmodels`, `scikit-learn`
-3. **Network locked** — `updateNetworkPolicy("deny-all")` cuts all network access before any LLM-generated code executes
-4. Analysis runs, charts saved as `chart_*.png`, findings printed as JSON to stdout
-5. Host reads chart files and stdout, VM is destroyed
+1. **Lazy init on first `executeAnalysis` call.** The VM is created, `data.csv` is written, and `pip install` runs with network access to fetch dependencies: `matplotlib`, `pandas`, `scipy`, `statsmodels`, `scikit-learn`. This is the expensive step (~20s) and happens at most once per request. If the plan is denied or the turn doesn't need code execution, no VM is ever spun up.
+2. **Network locked** — `updateNetworkPolicy("deny-all")` cuts all network access before any LLM-generated code executes.
+3. **Reused across retries.** If the model's first script errors and it calls `executeAnalysis` again, the same warm VM runs the fixed code — skipping the ~20s pip install tax. Stale `chart_*.png` files are wiped before each run so outputs don't leak between attempts. Each run is still a fresh `python3` process, so there are no in-memory globals to worry about either.
+4. **Stopped when the request ends.** `stopSession()` is wired to `streamText`'s `onFinish`, `onError`, and `onAbort` callbacks via Next.js 16's `after()`, plus a `req.signal` abort listener for client disconnects. Whichever fires first wins — the `stop()` function is idempotent, so extra calls are no-ops. `after()` is important here: without it, the fire-and-forget teardown promise gets dropped when the response closes and the VM leaks until its 3-minute self-timeout kicks in. `after()` keeps the promise alive past response completion without blocking the client.
+5. **No cross-turn reuse.** The session handle lives inside the per-request `createTools()` closure — a new POST (= new user message) always gets a fresh VM. This is a deliberate choice: sandbox lifetime doesn't line up with conversation lifetime, cross-request state would need an external store, and leaked VMs are worse than a ~20s init cost on the first `executeAnalysis` of each turn.
 
-**No sandbox reuse.** Every tool call — including retries on code errors — creates a fresh VM. This means zero state leakage between executions, at the cost of ~20s for dependency installation each time.
+**Safety net:** the `timeout: 3 * 60 * 1000` passed to `Sandbox.create()` auto-terminates the VM at the 3-minute mark even if our cleanup code somehow misses it. The Vercel Function's `maxDuration: 180` is aligned to the same ceiling.
 
 **What the LLM-generated code can access:** the pre-loaded `df` DataFrame, the installed Python packages, and the local filesystem. It cannot make network requests, access environment variables, or reach any external service.
 
@@ -126,7 +126,7 @@ Each `executeAnalysis` call spins up a fresh [Vercel Sandbox](https://vercel.com
 
 **Two-phase sandbox networking** — Dependencies install with network access, then `updateNetworkPolicy("deny-all")` locks the sandbox before executing LLM-generated Python. The code never has network access.
 
-**Self-healing code execution** — `streamText` runs with `stopWhen: stepCountIs(8)`. A normal flow takes 3 steps (plan → execute → compose), leaving 5 spare steps for retries. When Python code errors, the sandbox returns the error and stdout to the model, which fixes the code and calls `executeAnalysis` again. Each retry gets a fresh Sandbox — no state is shared between attempts. The tradeoff, of course, being ~30s to re-initialize the sandbox and execute the code.
+**Self-healing code execution** — `streamText` runs with `stopWhen: stepCountIs(8)`. A normal flow takes 3 steps (plan → execute → compose), leaving 5 spare steps for retries. When Python code errors, the sandbox returns the error and stdout to the model, which fixes the code and calls `executeAnalysis` again. Retries reuse the same sandbox VM within a request, so a retry only pays the Python execution cost (~1-2s) rather than the full init cost (~20s pip install). Chart files from the failed run are wiped before each attempt, and the Python process is fresh each call, so there's no in-memory state leakage between retries. The VM is still torn down at the end of every request.
 
 **Per-tool model routing** — Plan/analysis uses a fast/cheap model (Haiku), code generation uses a capable model (Sonnet). Both are configurable from the UI via Vercel AI Gateway model strings. Available models include Anthropic (Sonnet 4.6, Haiku 4.5) and OpenAI (GPT-5.4, GPT-5.4 Nano).
 
@@ -177,4 +177,4 @@ Outputs JSON + an HTML report to `eval/results/`. The HTML report includes summa
 
 **Vercel AI Gateway** — Model strings like `anthropic/claude-sonnet-4.6` and `openai/gpt-5.4` route through the gateway, providing a single API key for multiple providers. Models are configurable from the UI — "Model" controls the primary model, "Planner" controls the plan generation step.
 
-**Vercel Sandbox** — Each `executeAnalysis` call creates a Vercel Sandbox (`@vercel/sandbox`, Python 3.13, 3-min timeout). Dependencies install with network access, then `updateNetworkPolicy("deny-all")` locks the VM before any LLM-generated code runs. No sandbox reuse between calls — fresh VM every time for isolation. Supports abort signals — if the client disconnects, the sandbox is stopped immediately. This could be optimized further to reuse sandbox across tool retries, something to consider for a production build.
+**Vercel Sandbox** — Each chat request creates one Vercel Sandbox session (`@vercel/sandbox`, Python 3.13, 3-min timeout) on the first `executeAnalysis` call and reuses it across retries within the same `streamText` loop. Dependencies install with network access, then `updateNetworkPolicy("deny-all")` locks the VM before any LLM-generated code runs. The session is scoped to the request lifetime. Nothing is shared across conversation turns.

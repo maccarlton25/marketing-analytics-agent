@@ -32,18 +32,24 @@ interface EvalResult {
 async function runCase(testCase: EvalCase): Promise<EvalResult> {
   const start = Date.now();
 
-  const tools = createTools(DEMO_CSV, SCHEMA_DESCRIPTION, EVAL_MODEL, {
+  const { tools, stopSession } = createTools(DEMO_CSV, SCHEMA_DESCRIPTION, EVAL_MODEL, {
     requireApproval: false,
   });
 
   // Run the full agent pipeline — same code path as production
-  const result = await generateText({
-    model: EVAL_MODEL,
-    system: SYSTEM_PROMPT,
-    prompt: testCase.prompt,
-    tools,
-    stopWhen: stepCountIs(6),
-  });
+  let result;
+  try {
+    result = await generateText({
+      model: EVAL_MODEL,
+      system: SYSTEM_PROMPT,
+      prompt: testCase.prompt,
+      tools,
+      stopWhen: stepCountIs(6),
+    });
+  } finally {
+    // Always tear down the sandbox VM for this case, success or failure
+    await stopSession();
+  }
 
   // Walk ALL steps to extract outputs
   let reportMarkdown: string | undefined;

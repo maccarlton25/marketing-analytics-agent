@@ -1,9 +1,13 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { executeAnalysis } from "@/lib/sandbox";
+import { createSandboxSession, runAnalysis, type SandboxSession } from "@/lib/sandbox";
 
 /**
  * Creates the agent's tool set. Shared between the chat route and eval harness.
+ *
+ * The sandbox is lazily initialized on the first `executeAnalysis` call and reused
+ * across retries within the same tool set. Callers are responsible for stopping it
+ * via the returned `stopSession` when the request/eval case ends.
  *
  * @param csvText - The CSV data to analyze
  * @param schemaDescription - Human-readable schema description
@@ -18,7 +22,36 @@ export function createTools(
   options: { requireApproval?: boolean; analyzeModel?: string } = {},
 ) {
   const analyzeModel = options.analyzeModel ?? model;
-  return {
+
+  // Lazy sandbox session — created on first executeAnalysis call, reused on retries.
+  // Scoped to this createTools() call, so a new POST (= new createTools) gets a fresh VM.
+  let sessionPromise: Promise<SandboxSession> | null = null;
+  let runCount = 0;
+
+  const getSession = (): Promise<SandboxSession> => {
+    if (!sessionPromise) {
+      console.log(`  [executeAnalysis] initializing new sandbox session`);
+      sessionPromise = createSandboxSession(csvText).catch((err) => {
+        // Null out so a subsequent call can retry init from scratch
+        sessionPromise = null;
+        throw err;
+      });
+    } else {
+      console.log(`  [executeAnalysis] reusing existing sandbox session`);
+    }
+    return sessionPromise;
+  };
+
+  const stopSession = async () => {
+    if (!sessionPromise) return;
+    try {
+      const session = await sessionPromise;
+      await session.stop();
+    } catch {
+      // init failed or already stopped — nothing to do
+    }
+  };
+  const tools = {
     planAnalysis: tool({
       description:
         "Analyze the dataset schema and user question to produce a structured analysis plan. " +
@@ -39,6 +72,17 @@ export function createTools(
         ),
       }),
       needsApproval: options.requireApproval ?? false,
+      /*
+        Above defines the JSON we expect for the tool. If model output doesn't match, AI SDK rejects the tool call.
+        {
+          "analysisType": "channel efficiency",
+          "computations": ["ROAS by channel", "spend vs revenue ratio"],
+          "charts": [
+            { "id": "chart_1", "description": "Bar chart of ROAS by channel" }
+          ],
+          "reportOutline": ["Summary", "ROAS Rankings", "Recommendations"]
+        }
+      */
       execute: async (plan) => {
         console.log(`  [planAnalysis] ${plan.analysisType} | ${plan.computations.length} computations | ${plan.charts.length} charts`);
         return {
@@ -70,9 +114,11 @@ export function createTools(
           "One sentence describing what this analysis computes",
         ),
       }),
-      execute: async ({ code }, { abortSignal }) => {
-        console.log(`  [executeAnalysis] ${code?.length ?? 0} chars of Python`);
-        const result = await executeAnalysis(csvText, code, abortSignal);
+      execute: async ({ code }) => {
+        runCount++;
+        console.log(`  [executeAnalysis] call #${runCount} — ${code?.length ?? 0} chars of Python`);
+        const session = await getSession();
+        const result = await runAnalysis(session.sandbox, code, runCount);
         if (!result.success) {
           return {
             success: false,
@@ -99,7 +145,7 @@ export function createTools(
         if (!output.success) {
           return { type: "content" as const, value: [{ type: "text" as const, text: JSON.stringify(output) }] };
         }
-        const { charts: _charts, ...rest } = output;
+        const { charts: _charts, ...rest } = output; // destructure out charts (base64), keep everything else
         return { type: "content" as const, value: [{ type: "text" as const, text: JSON.stringify(rest) }] };
       },
     }),
@@ -125,4 +171,6 @@ export function createTools(
       },
     }),
   };
+
+  return { tools, stopSession };
 }

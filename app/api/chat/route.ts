@@ -4,6 +4,7 @@ import {
   stepCountIs,
   UIMessage,
 } from "ai";
+import { after } from "next/server";
 import { createTools } from "@/lib/tools";
 import { SYSTEM_PROMPT } from "@/lib/prompts";
 import { isAllowedModel } from "@/lib/models";
@@ -61,25 +62,39 @@ export async function POST(req: Request) {
 
   // Create tools first so convertToModelMessages can use toModelOutput
   // to strip chart base64 from previous turns
-  const tools = createTools(csvText, schemaDescription, codeGenModel, {
+  const { tools, stopSession } = createTools(csvText, schemaDescription, codeGenModel, {
     requireApproval: true,
     analyzeModel,
   });
   const modelMessages = await convertToModelMessages(cleanedMessages, { tools });
 
+  // Ensure the sandbox VM is torn down if the client disconnects mid-request
+  req.signal.addEventListener("abort", () => {
+    console.log(`[chat] request aborted — stopping sandbox session`);
+    void stopSession();
+  }, { once: true });
+
   try {
     const result = createStreamResult(
-      codeGenModel, analyzeModel, modelMessages, tools, requestStart,
+      codeGenModel, analyzeModel, modelMessages, tools, stopSession, requestStart,
     );
     return result.toUIMessageStreamResponse();
   } catch (err) {
     console.error(`[chat] Primary model failed (${shortModel(codeGenModel)}), falling back to ${shortModel(MODEL_CONFIG.codeGenFallback)}:`, err);
-    const fallbackTools = createTools(csvText, schemaDescription, MODEL_CONFIG.codeGenFallback, {
-      requireApproval: true,
-      analyzeModel,
-    });
+    // Primary failed before streaming started — tear down any session it may have created
+    void stopSession();
+    const { tools: fallbackTools, stopSession: stopFallbackSession } = createTools(
+      csvText, schemaDescription, MODEL_CONFIG.codeGenFallback, {
+        requireApproval: true,
+        analyzeModel,
+      },
+    );
+    req.signal.addEventListener("abort", () => {
+      console.log(`[chat] request aborted — stopping fallback sandbox session`);
+      void stopFallbackSession();
+    }, { once: true });
     const result = createStreamResult(
-      MODEL_CONFIG.codeGenFallback, analyzeModel, modelMessages, fallbackTools, requestStart,
+      MODEL_CONFIG.codeGenFallback, analyzeModel, modelMessages, fallbackTools, stopFallbackSession, requestStart,
     );
     return result.toUIMessageStreamResponse();
   }
@@ -90,7 +105,8 @@ function createStreamResult(
   analyzeModel: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messages: any[],
-  tools: ReturnType<typeof createTools>,
+  tools: ReturnType<typeof createTools>["tools"],
+  stopSession: () => Promise<void>,
   requestStart: number,
 ) {
   let stepNumber = 0;
@@ -143,6 +159,16 @@ function createStreamResult(
         `[chat] Done in ${steps.length} steps | ${fmtTokens(totalUsage?.totalTokens)} total tokens${cacheStr} | ${elapsed}s`,
       );
       console.log(`[chat] ${"─".repeat(50)}\n`);
+      // Stream finished normally — tear down the sandbox VM after response flushes
+      after(stopSession());
+    },
+    onError: ({ error }) => {
+      console.error(`[chat] stream error — stopping sandbox session:`, error);
+      after(stopSession());
+    },
+    onAbort: () => {
+      console.log(`[chat] stream aborted — stopping sandbox session`);
+      after(stopSession());
     },
   });
 }
